@@ -1,0 +1,9 @@
+DefaultPackage
+grails-app.conf
+grails-app.controllers
+scripts
+src.groovy.ch.silviowangler.groovy.util.builder
+test.unit
+unzipped
+unzipped.scripts
+unzipped.src.groovy.ch.silviowangler.groovy.util.builder
