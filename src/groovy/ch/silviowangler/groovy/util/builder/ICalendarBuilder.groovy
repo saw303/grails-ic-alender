@@ -66,7 +66,6 @@ public class ICalendarBuilder extends BuilderSupport {
   }
 
   protected Object createNode(Object nodeName, Map params) {
-
     if (nodeName == 'calendar') handleCalendarNode(params, nodeName)
     if (nodeName == 'event') handleEventNode(params, nodeName)
 
@@ -80,17 +79,14 @@ public class ICalendarBuilder extends BuilderSupport {
   }
 
   private void handleCalendarNode(Map params, nodeName) {
-
     stringBuilder << 'BEGIN:VCALENDAR\n'
     stringBuilder << 'CALSCALE:GREGORIAN\n'
     stringBuilder << 'VERSION:2.0\n'
     stringBuilder << "PRODID:${params.prodid ?: '-//Grails iCalendar event builder//NONSGML Grails Events V0.1//EN'}\n"
     stringBuilder << 'METHOD:PUBLISH\n'
-
   }
 
   private void handleEventNode(Map params, nodeName) {
-
     stringBuilder << 'BEGIN:VEVENT\n'
     if (params.start) handleDateField(params.start, 'DTSTART')
     if (params.end) handleDateField(params.end, 'DTEND')
