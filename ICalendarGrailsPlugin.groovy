@@ -1,4 +1,5 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
+import grails.util.GrailsUtil
 
 /**
  * @author Silvio Wangler (silvio.wangler@gmail.com)
@@ -9,7 +10,9 @@ class ICalendarGrailsPlugin {
   // the version or versions of Grails the plugin is designed for
   def grailsVersion = "1.1.1 > *"
   // the other plugins this plugin depends on
-  def dependsOn = [:]
+  def dependsOn = [controllers: GrailsUtil.grailsVersion]
+  def loadAfter = ['controllers']
+  def observe = ['controllers']
   // resources that are excluded from plugin packaging
   def pluginExcludes = [
           "grails-app/views/error.gsp",
@@ -40,7 +43,7 @@ class ICalendarGrailsPlugin {
   def doWithDynamicMethods = {ctx ->
 
     // hooking into render method
-    for (Object controllerClass: application.controllerClasses) {
+    application.controllerClasses.each() {controllerClass ->
       println "Modifying render method on controller ${controllerClass.class.name}"
       replaceRenderMethod(controllerClass)
     }
@@ -66,23 +69,25 @@ class ICalendarGrailsPlugin {
    * 'text/calendar' used by the iCalendar plugin.
    */
   private void replaceRenderMethod(controllerClass) {
+
     def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
     controllerClass.metaClass.render = {Map params, Closure closure ->
 
       if (params.contentType?.toLowerCase() == 'text/calendar') {
 
-        println '--------> my mode'
-
-        def builder = new ICalendarBuilder()
-        builder.build(closure)
         response.contentType = 'text/calendar'
         response.characterEncoding = "UTF-8"
-        builder.toString()
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate") //HTTP/1.1
+        response.setHeader("Pragma", "no-cache") // HTTP/1.0
+
+        def builder = new ICalendarBuilder()
+        builder.invokeMethod('translate', closure)
+
+        render builder.toString()
 
       } else {
         // Defer to original render method
-        println '---->><<<  original mode'
         oldRender.invoke(delegate, [params, closure] as Object[])
       }
     }

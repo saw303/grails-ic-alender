@@ -3,7 +3,6 @@ package ch.silviowangler.groovy.util.builder
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-
 /**
  * iCalendar builder
  *
@@ -28,9 +27,14 @@ public class ICalendarBuilder extends BuilderSupport {
     this.stringBuilder = new StringBuilder()
   }
 
+  public void translate(Closure c) {
+    def h = c.call()
+  }
+
   protected void setParent(Object parent, Object child) {
 
     log.debug "set parent $parent $child"
+    if (parent == 'translate') return
     if (!PARENT_CHILD_CONSTRAINTS[parent]?.contains(child)) {
       if (!PARENT_CHILD_CONSTRAINTS[parent]) throw new IllegalArgumentException("Unkown element $parent")
       throw new IllegalArgumentException("Element $child not possible for parent element $parent. Parent element allows the following child elements ${PARENT_CHILD_CONSTRAINTS[parent].toListString()}")
@@ -61,26 +65,26 @@ public class ICalendarBuilder extends BuilderSupport {
 
   private void handleCalendarNode(Map params, nodeName) {
 
-      stringBuilder << 'BEGIN:VCALENDAR\n'
-      stringBuilder << 'CALSCALE:GREGORIAN\n'
-      stringBuilder << 'VERSION:2.0\n'
-      stringBuilder << "PRODID:${params.prodid ?: '-//Grails iCalendar event builder//NONSGML Grails Events V0.1//EN'}\n"
-      stringBuilder << 'METHOD:PUBLISH\n'
+    stringBuilder << 'BEGIN:VCALENDAR\n'
+    stringBuilder << 'CALSCALE:GREGORIAN\n'
+    stringBuilder << 'VERSION:2.0\n'
+    stringBuilder << "PRODID:${params.prodid ?: '-//Grails iCalendar event builder//NONSGML Grails Events V0.1//EN'}\n"
+    stringBuilder << 'METHOD:PUBLISH\n'
 
   }
 
   private void handleEventNode(Map params, nodeName) {
 
-      stringBuilder << 'BEGIN:VEVENT\n'
-      if (params.start) handleDateField(params.start, 'DTSTART')
-      if (params.end) handleDateField(params.end, 'DTEND')
-      if (params.summary) stringBuilder << "SUMMARY:${params.summary}\n"
-      if (params.description) stringBuilder << "DESCRIPTION:${params.description}\n"
-      handleDateField(new Date(), 'CREATED')
-      stringBuilder << 'SEQUENCE:1\n'
-      stringBuilder << "UID:${params.uid ?: "${params.summary.hashCode()}@localhost"}\n"
-      if (params.location) stringBuilder << "LOCATION:${params.location}\n"
-      stringBuilder << "CLASS:${params.classification ? params.classification.toUpperCase() : 'PUBLIC'}\n"
+    stringBuilder << 'BEGIN:VEVENT\n'
+    if (params.start) handleDateField(params.start, 'DTSTART')
+    if (params.end) handleDateField(params.end, 'DTEND')
+    if (params.summary) stringBuilder << "SUMMARY:${params.summary}\n"
+    if (params.description) stringBuilder << "DESCRIPTION:${params.description}\n"
+    handleDateField(new Date(), 'CREATED')
+    stringBuilder << 'SEQUENCE:1\n'
+    stringBuilder << "UID:${params.uid ?: UUID.randomUUID().toString()}\n"
+    if (params.location) stringBuilder << "LOCATION:${params.location}\n"
+    stringBuilder << "CLASS:${params.classification ? params.classification.toUpperCase() : 'PUBLIC'}\n"
 
   }
 

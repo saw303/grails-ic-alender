@@ -1,6 +1,5 @@
 class TestController {
 
-
   def index = {
 
     render(contentType: 'text/calendar') {
