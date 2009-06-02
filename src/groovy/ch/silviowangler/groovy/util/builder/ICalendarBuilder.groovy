@@ -1,7 +1,12 @@
 package ch.silviowangler.groovy.util.builder
 
+import net.fortuna.ical4j.model.Calendar
+import net.fortuna.ical4j.model.Date
+import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import net.fortuna.ical4j.model.property.*
 
 /*
  * Copyright 2007 the original author or authors.
@@ -27,11 +32,13 @@ import org.apache.commons.logging.LogFactory
  * @author Silvio Wangler
  * @since 0.1
  */
-
 public class ICalendarBuilder extends BuilderSupport {
 
   private StringBuilder stringBuilder;
   private Log log = LogFactory.getLog(ICalendarBuilder.class)
+
+  private Calendar cal
+  private VEvent e
 
   /**
    * Declares a parent/child relations
@@ -40,11 +47,10 @@ public class ICalendarBuilder extends BuilderSupport {
 
   public ICalendarBuilder() {
     super();
-    this.stringBuilder = new StringBuilder()
   }
 
   public void translate(Closure c) {
-    def h = c.call()
+    c.call()
   }
 
   protected void setParent(Object parent, Object child) {
@@ -71,7 +77,7 @@ public class ICalendarBuilder extends BuilderSupport {
 
     if (nodeName == 'organizer') {
       if (params.name && params.email) {
-        stringBuilder << "ORGANIZER;CN=${params.name}:MAILTO:${params.email}\n"
+        e.properties << new Organizer('http://www.silviowangler.ch')
       }
     }
     log.debug "createNode $nodeName, $params"
@@ -79,41 +85,47 @@ public class ICalendarBuilder extends BuilderSupport {
   }
 
   private void handleCalendarNode(Map params, nodeName) {
-    stringBuilder << 'BEGIN:VCALENDAR\n'
-    stringBuilder << 'CALSCALE:GREGORIAN\n'
-    stringBuilder << 'VERSION:2.0\n'
-    stringBuilder << "PRODID:${params.prodid ?: '-//Grails iCalendar event builder//NONSGML Grails Events V0.1//EN'}\n"
-    stringBuilder << 'METHOD:PUBLISH\n'
+    this.cal = new Calendar()
+    this.cal.properties << new ProdId(params.prodid ?: '-//Grails iCalendar plugin//NONSGML Grails iCalendar plugin//EN')
+    this.cal.properties << Version.VERSION_2_0
+    this.cal.properties << CalScale.GREGORIAN
+    this.cal.properties << Method.PUBLISH
   }
 
   private void handleEventNode(Map params, nodeName) {
-    stringBuilder << 'BEGIN:VEVENT\n'
-    if (params.start) handleDateField(params.start, 'DTSTART')
-    if (params.end) handleDateField(params.end, 'DTEND')
-    if (params.summary) stringBuilder << "SUMMARY:${params.summary}\n"
-    if (params.description) stringBuilder << "DESCRIPTION:${params.description}\n"
-    handleDateField(new Date(), 'CREATED')
-    stringBuilder << 'SEQUENCE:1\n'
-    stringBuilder << "UID:${params.uid ?: UUID.randomUUID().toString()}\n"
-    if (params.location) stringBuilder << "LOCATION:${params.location}\n"
-    stringBuilder << "CLASS:${params.classification ? params.classification.toUpperCase() : 'PUBLIC'}\n"
 
-  }
-
-  private void handleDateField(Date date, String fieldName) {
-    stringBuilder << "$fieldName:${date.format('yyyyMMdd')}T${date.format('HHmm')}00Z\n"
+    e = new VEvent(new net.fortuna.ical4j.model.Date(params.start.time),
+            new net.fortuna.ical4j.model.Date(params.end.time), params.summary)
+    e.properties << new UidGenerator('1').generateUid()
+    if (params.location) e.properties << new Location(params.location)
+    if (params.description) e.properties << new Description(params.describtion)
+    if (params.classification) e.properties << getClazz(params.classification)
+    this.cal.components << e
   }
 
   protected Object createNode(Object nodeName, Map params, Object o1) {
     throw new RuntimeException('Unsupported mode')
   }
 
-  protected void nodeCompleted(Object parent, Object node) {
-    log.debug "nodeCompleted $parent, $node"
-    super.nodeCompleted(parent, node);
-    if (node == 'calendar') stringBuilder << 'END:VCALENDAR'
-    if (node == 'event') stringBuilder << 'END:VEVENT\n'
+  public String toString() {
+    this.cal?.toString()
   }
 
-  public String toString() { stringBuilder.toString() }
+  /**
+   * Clears the internal iCalendar buffer
+   */
+  public void reset() {
+    this.cal = null
+  }
+
+  private Clazz getClazz(String value) {
+    if (value.toLowerCase() == 'public') return Clazz.PUBLIC
+    if (value.toLowerCase() == 'private') return Clazz.PRIVATE
+    if (value.toLowerCase() == 'confidential') return Clazz.CONFIDENTIAL
+    return new Clazz(value)
+  }
+
+  public Calendar getCal() {
+    this.cal
+  }
 }
