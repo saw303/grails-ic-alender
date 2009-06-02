@@ -3,6 +3,22 @@ package ch.silviowangler.groovy.util.builder
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/*
+ * Copyright 2007 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * iCalendar builder
  *
@@ -34,7 +50,7 @@ public class ICalendarBuilder extends BuilderSupport {
   protected void setParent(Object parent, Object child) {
 
     log.debug "set parent $parent $child"
-    if (parent == 'translate') return
+    if (parent == 'translate') return // skip it because its the special entry if the builder is not working in inline mode
     if (!PARENT_CHILD_CONSTRAINTS[parent]?.contains(child)) {
       if (!PARENT_CHILD_CONSTRAINTS[parent]) throw new IllegalArgumentException("Unkown element $parent")
       throw new IllegalArgumentException("Element $child not possible for parent element $parent. Parent element allows the following child elements ${PARENT_CHILD_CONSTRAINTS[parent].toListString()}")
@@ -89,7 +105,7 @@ public class ICalendarBuilder extends BuilderSupport {
   }
 
   private void handleDateField(Date date, String fieldName) {
-    stringBuilder << "$fieldName:${date.format('yyyyMMdd')}T${date.format('HH:mm')}Z\n"
+    stringBuilder << "$fieldName:${date.format('yyyyMMdd')}T${date.format('HHmm')}00Z\n"
   }
 
   protected Object createNode(Object nodeName, Map params, Object o1) {
