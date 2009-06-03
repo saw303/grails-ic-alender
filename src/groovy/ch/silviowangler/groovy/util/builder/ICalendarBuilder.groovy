@@ -1,8 +1,11 @@
 package ch.silviowangler.groovy.util.builder
 
 import net.fortuna.ical4j.model.Calendar
-import net.fortuna.ical4j.model.Date
+import net.fortuna.ical4j.model.DateTime
+import net.fortuna.ical4j.model.TimeZoneRegistry
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -34,9 +37,7 @@ import net.fortuna.ical4j.model.property.*
  */
 public class ICalendarBuilder extends BuilderSupport {
 
-  private StringBuilder stringBuilder;
   private Log log = LogFactory.getLog(ICalendarBuilder.class)
-
   private Calendar cal
   private VEvent e
 
@@ -45,14 +46,28 @@ public class ICalendarBuilder extends BuilderSupport {
    */
   public static final Map PARENT_CHILD_CONSTRAINTS = ['calendar': ['events'], 'events': ['event'], 'event': ['organizer']]
 
+  /**
+   * Default constructor
+   * @since 0.1
+   */
   public ICalendarBuilder() {
     super();
   }
 
+  /**
+   * Entry point for external (not inline) closures such as
+   *
+   * <code>
+   * def c = {*  calender {*      events {*        ....
+   *}*}*}* builder.invokeMethod('translate', c)
+   * </code>
+   * @since 0.2
+   */
   public void translate(Closure c) {
     c.call()
   }
 
+  @Override
   protected void setParent(Object parent, Object child) {
 
     log.debug "set parent $parent $child"
@@ -63,21 +78,24 @@ public class ICalendarBuilder extends BuilderSupport {
     }
   }
 
+  @Override
   protected Object createNode(Object o) {
     return createNode(o, [:])
   }
 
+  @Override
   protected Object createNode(Object o, Object o1) {
     throw new RuntimeException('Unsupported mode')
   }
 
+  @Override
   protected Object createNode(Object nodeName, Map params) {
     if (nodeName == 'calendar') handleCalendarNode(params, nodeName)
     if (nodeName == 'event') handleEventNode(params, nodeName)
 
     if (nodeName == 'organizer') {
       if (params.name && params.email) {
-        e.properties << new Organizer('http://www.silviowangler.ch')
+        e.properties << new Organizer('mailto:organizer@email.com')
       }
     }
     log.debug "createNode $nodeName, $params"
@@ -94,9 +112,17 @@ public class ICalendarBuilder extends BuilderSupport {
 
   private void handleEventNode(Map params, nodeName) {
 
-    e = new VEvent(new net.fortuna.ical4j.model.Date(params.start.time),
-            new net.fortuna.ical4j.model.Date(params.end.time), params.summary)
-    e.properties << new UidGenerator('1').generateUid()
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.instance.createRegistry()
+    TimeZone timezone = registry.getTimeZone("Europe/Zurich")
+    VTimeZone tz = timezone.vTimeZone
+
+    e = new VEvent(new DateTime(params.start),
+            new DateTime(params.end), params.summary)
+    /*
+    set inetadress to null otherwise it takes awful lots of time to resolve a hostname or ip adress
+     */
+    e.properties << new UidGenerator(null, 'iCalPlugin').generateUid()
+    e.properties << tz.timeZoneId
     if (params.location) e.properties << new Location(params.location)
     if (params.description) e.properties << new Description(params.describtion)
     if (params.classification) e.properties << getClazz(params.classification)
@@ -107,15 +133,21 @@ public class ICalendarBuilder extends BuilderSupport {
     throw new RuntimeException('Unsupported mode')
   }
 
+  /**
+   * Returns the calendar as iCalendar format
+   * @since 0.1
+   */
   public String toString() {
     this.cal?.toString()
   }
 
   /**
    * Clears the internal iCalendar buffer
+   * @since 0.2
    */
   public void reset() {
     this.cal = null
+    this.e = null
   }
 
   private Clazz getClazz(String value) {
@@ -125,6 +157,10 @@ public class ICalendarBuilder extends BuilderSupport {
     return new Clazz(value)
   }
 
+  /**
+   * Returns the ical4j calendar instance
+   * @since 0.2
+   */
   public Calendar getCal() {
     this.cal
   }
