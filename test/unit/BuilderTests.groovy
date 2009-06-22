@@ -1,5 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.test.GrailsUnitTestCase
+import net.fortuna.ical4j.model.Component
 
 /*
 * Copyright 2007 the original author or authors.
@@ -49,7 +50,13 @@ class BuilderTests extends GrailsUnitTestCase {
       }
     }
     println builder.cal
-    builder.cal.validate(true) // throws an exception if its invalid    
-    assertEquals 2, builder.cal.components.size()
+    builder.cal.validate(true) // throws an exception if its invalid
+
+    def events = builder.cal.getComponents(Component.VEVENT)
+
+    assertEquals 2, events.size()
+
+    assertEquals 'wrong summary', 'Short info1', events[0].summary.value
+    assertEquals 'wrong summary', 'Short info2', events[1].summary.value
   }
 }

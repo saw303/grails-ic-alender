@@ -22,7 +22,7 @@ import grails.util.GrailsUtil
  */
 class ICalendarGrailsPlugin {
   // the plugin version
-  def version = "0.3"
+  def version = "0.2.1"
   // the version or versions of Grails the plugin is designed for
   def grailsVersion = "1.1.1 > *"
   // the other plugins this plugin depends on
@@ -60,7 +60,6 @@ class ICalendarGrailsPlugin {
 
     // hooking into render method
     application.controllerClasses.each() {controllerClass ->
-      println "Modifying render method on controller ${controllerClass.class.name}"
       replaceRenderMethod(controllerClass)
     }
   }
@@ -85,6 +84,8 @@ class ICalendarGrailsPlugin {
    * 'text/calendar' used by the iCalendar plugin.
    */
   private void replaceRenderMethod(controllerClass) {
+
+    println "Modifying render method on controller '${controllerClass.name}'"
 
     def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
