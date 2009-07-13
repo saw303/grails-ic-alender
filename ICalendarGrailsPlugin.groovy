@@ -1,5 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.util.GrailsUtil
+import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
 
 /*
  * Copyright 2007 the original author or authors.
@@ -22,17 +23,17 @@ import grails.util.GrailsUtil
  */
 class ICalendarGrailsPlugin {
   // the plugin version
-  def version = "0.2"
+  def version = '0.2.1'
   // the version or versions of Grails the plugin is designed for
-  def grailsVersion = "1.1.1 > *"
+  def grailsVersion = '1.1.1 > *'
   // the other plugins this plugin depends on
   def dependsOn = [controllers: GrailsUtil.grailsVersion]
   def loadAfter = ['controllers']
   def observe = ['controllers']
   // resources that are excluded from plugin packaging
   def pluginExcludes = [
-          "grails-app/views/error.gsp",
-          "grails-app/controllers/TestController.groovy"
+          'grails-app/views/error.gsp',
+          'grails-app/controllers/TestController.groovy'
   ]
 
   def author = "Silvio Wangler"
@@ -42,7 +43,7 @@ class ICalendarGrailsPlugin {
 	'''
 
   // URL to the plugin's documentation
-  def documentation = "http://grails.org/ICalendar+Plugin"
+  def documentation = 'http://grails.org/ICalendar+Plugin'
 
   def doWithSpring = {
     // do nothing yet
@@ -60,15 +61,14 @@ class ICalendarGrailsPlugin {
 
     // hooking into render method
     application.controllerClasses.each() {controllerClass ->
-      println "Modifying render method on controller ${controllerClass.class.name}"
       replaceRenderMethod(controllerClass)
     }
   }
 
   def onChange = {event ->
-    // watching is modified and reloaded. The event contains: event.source,
-    // event.application, event.manager, event.ctx, and event.plugin.
-    if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
+
+    // only process controller classes
+    if (application.isArtefactOfType(DefaultGrailsControllerClass.CONTROLLER, event.source)) {
       def clazz = application.getControllerClass(event.source?.name)
       replaceRenderMethod(clazz)
     }
@@ -86,6 +86,8 @@ class ICalendarGrailsPlugin {
    */
   private void replaceRenderMethod(controllerClass) {
 
+    println "Modifying render method on controller '${controllerClass.name}'"
+
     def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
     controllerClass.metaClass.render = {Map params, Closure closure ->
@@ -93,9 +95,9 @@ class ICalendarGrailsPlugin {
       if (params.contentType?.toLowerCase() == 'text/calendar') {
 
         response.contentType = 'text/calendar'
-        response.characterEncoding = "UTF-8"
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate") //HTTP/1.1
-        response.setHeader("Pragma", "no-cache") // HTTP/1.0
+        response.characterEncoding = 'UTF-8'
+        response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate') //HTTP/1.1
+        response.setHeader('Pragma', 'no-cache') // HTTP/1.0
 
         def builder = new ICalendarBuilder()
         builder.invokeMethod('translate', closure)
