@@ -23,9 +23,9 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
  */
 class ICalendarGrailsPlugin {
   // the plugin version
-  def version = '0.2.1'
+  def version = '0.3'
   // the version or versions of Grails the plugin is designed for
-  def grailsVersion = '1.1.1 > *'
+  def grailsVersion = '1.3.6 > *'
   // the other plugins this plugin depends on
   def dependsOn = [controllers: GrailsUtil.grailsVersion]
   def loadAfter = ['controllers']
