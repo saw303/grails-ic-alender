@@ -13,5 +13,11 @@
   <dependencies>
     <plugin name='controllers' version='1.1 &gt; *' />
   </dependencies>
-  <behavior />
+  <behavior>
+    <method name='render' artefact='Controller' type='TestController'>
+      <description />
+      <argument type='java.util.Map' />
+      <argument type='groovy.lang.Closure' />
+    </method>
+  </behavior>
 </plugin>
