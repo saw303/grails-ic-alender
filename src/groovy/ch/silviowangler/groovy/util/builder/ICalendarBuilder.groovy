@@ -124,7 +124,7 @@ public class ICalendarBuilder extends BuilderSupport {
     e.properties << new UidGenerator(null, 'iCalPlugin').generateUid()
     e.properties << tz.timeZoneId
     if (params.location) e.properties << new Location(params.location)
-    if (params.description) e.properties << new Description(params.describtion)
+    if (params.description) e.properties << new Description(params.description)
     if (params.classification) e.properties << getClazz(params.classification)
     this.cal.components << e
   }

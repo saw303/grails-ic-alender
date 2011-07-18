@@ -18,45 +18,54 @@ import net.fortuna.ical4j.model.Component
 * limitations under the License.
 */
 
+/**
+ * @author Silvio Wangler
+ */
+
 class BuilderTests extends GrailsUnitTestCase {
 
-  ICalendarBuilder builder
+    ICalendarBuilder builder
 
-  protected void setUp() {
-    super.setUp()
-    this.builder = new ICalendarBuilder()
-  }
-
-  protected void tearDown() {
-    super.tearDown()
-    this.builder = null
-  }
-
-  void testBuilderWritesCalendar() {
-    builder.calender()
-    assertNull builder.cal
-  }
-
-  void testSimpleTwoEvents() {
-
-    builder.calendar {
-      events {
-        event(start: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 15:00'), description: 'Events description', summary: 'Short info1') {
-          organizer(name: 'Silvio Wangler', email: 'silvio.wangler@amail.com')
-        }
-        event(start: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 15:00'), description: 'hell yes', summary: 'Short info2', location: '@home', classification: 'private') {
-          organizer(name: 'Silvio Wangler', email: 'silvio.wangler@mail.com')
-        }
-      }
+    protected void setUp() {
+        super.setUp()
+        this.builder = new ICalendarBuilder()
     }
-    println builder.cal
-    builder.cal.validate(true) // throws an exception if its invalid
 
-    def events = builder.cal.getComponents(Component.VEVENT)
+    protected void tearDown() {
+        super.tearDown()
+        this.builder = null
+    }
 
-    assertEquals 2, events.size()
+    void testBuilderWritesCalendar() {
+        builder.calender()
+        assertNull builder.cal
+    }
 
-    assertEquals 'wrong summary', 'Short info1', events[0].summary.value
-    assertEquals 'wrong summary', 'Short info2', events[1].summary.value
-  }
+    void testSimpleTwoEvents() {
+
+        final eventDescription1 = 'Events description'
+        final eventDescription2 = 'hell yes'
+
+        builder.calendar {
+            events {
+                event(start: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 15:00'), description: eventDescription1, summary: 'Short info1') {
+                    organizer(name: 'Silvio Wangler', email: 'silvio.wangler@amail.com')
+                }
+                event(start: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 15:00'), description: eventDescription2, summary: 'Short info2', location: '@home', classification: 'private') {
+                    organizer(name: 'Silvio Wangler', email: 'silvio.wangler@mail.com')
+                }
+            }
+        }
+        println builder.cal
+        builder.cal.validate(true) // throws an exception if its invalid
+
+        def events = builder.cal.getComponents(Component.VEVENT)
+
+        assertEquals 2, events.size()
+
+        assertEquals 'wrong summary', 'Short info1', events[0].summary.value
+        assertEquals 'wrong description', eventDescription1, events[0].description.value
+        assertEquals 'wrong summary', 'Short info2', events[1].summary.value
+        assertEquals 'wrong description', eventDescription2, events[1].description.value
+    }
 }
