@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 class ICalendarGrailsPlugin {
-	def version = "0.3.2" // added by set-version
+	def version = "0.3.3-SNAPSHOT" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '1.1 > *'
