@@ -1,5 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
+import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 
 /*
  * Copyright 2007 the original author or authors.
@@ -39,6 +40,7 @@ class ICalendarGrailsPlugin {
     def authorEmail = "silvio.wangler@gmail.com"
     def title = "This plugin contains a builder to easily convert your event into the iCalendar format"
     def description = '''
+        The plugin hooks replaces each render method that uses the contentType 'text/calendar'.
 	'''
 
     // URL to the plugin's documentation
@@ -67,19 +69,18 @@ class ICalendarGrailsPlugin {
     def onChange = {event ->
 
         // only process controller classes
-        if (application.isArtefactOfType(DefaultGrailsControllerClass.CONTROLLER, event.source)) {
+        if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
             def clazz = application.getControllerClass(event.source?.name)
             replaceRenderMethod(clazz)
         }
     }
 
     def onConfigChange = {event ->
-        // TODO Implement code that is executed when the project configuration changes.
         // The event is the same as for 'onChange'.
     }
 
     /**
-     * This implementation is based on Marc Palmers feed plugin. It hooks into the render method
+     * This implementation is based on Marc Palmers feeds plugin. It hooks into the render method
      * of a Grails controller class and adds an alternative behaviour for the mime type
      * 'text/calendar' used by the iCalendar plugin.
      */
@@ -91,17 +92,16 @@ class ICalendarGrailsPlugin {
 
         controllerClass.metaClass.render = {Map params, Closure closure ->
 
-            if (params.contentType?.toLowerCase() == 'text/calendar') {
+            if ('text/calendar'.equalsIgnoreCase(params.contentType)) {
 
-                response.contentType = 'text/calendar'
-                response.characterEncoding = 'UTF-8'
-                response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate') //HTTP/1.1
-                response.setHeader('Pragma', 'no-cache') // HTTP/1.0
+                final String MIME_TYPE_TEXT_CALENDAR = 'text/calendar'
 
                 def builder = new ICalendarBuilder()
                 builder.invokeMethod('translate', closure)
 
-                render builder.toString()
+                render (contentType : MIME_TYPE_TEXT_CALENDAR,
+                        text: builder.toString(),
+                        encoding:params.characterEncoding ?: 'UTF-8')
 
             } else {
                 // Defer to original render method

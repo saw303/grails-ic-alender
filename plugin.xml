@@ -1,23 +1,33 @@
-<plugin name='ic-alendar' version='0.3.2' grailsVersion='1.1 &gt; *'>
+<plugin name='ic-alendar' version='0.3.3-SNAPSHOT' grailsVersion='1.1 &gt; *'>
   <author>Silvio Wangler</author>
   <authorEmail>silvio.wangler@gmail.com</authorEmail>
   <title>This plugin contains a builder to easily convert your event into the iCalendar format</title>
   <description>
+        The plugin hooks replaces each render method that uses the contentType 'text/calendar'.
 	</description>
   <documentation>http://grails.org/ICalendar+Plugin</documentation>
+  <type>ICalendarGrailsPlugin</type>
   <resources>
-    <resource>DataSource</resource>
-    <resource>UrlMappings</resource>
     <resource>TestController</resource>
   </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://plugins.grails.org' />
+    <repository name='http://repo.grails.org/grails/plugins' url='http://repo.grails.org/grails/plugins/' />
+    <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
+    <repository name='grailsCore' url='http://svn.codehaus.org/grails/trunk/grails-plugins' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+  </repositories>
   <dependencies>
-    <plugin name='controllers' version='1.1 &gt; *' />
+    <compile>
+      <dependency group='org.mnode.ical4j' name='ical4j' version='1.0.3' />
+    </compile>
+    <runtime>
+      <dependency group='backport-util-concurrent' name='backport-util-concurrent' version='3.1' />
+    </runtime>
   </dependencies>
-  <behavior>
-    <method name='render' artefact='Controller' type='TestController'>
-      <description />
-      <argument type='java.util.Map' />
-      <argument type='groovy.lang.Closure' />
-    </method>
-  </behavior>
+  <plugins />
+  <runtimePluginRequirements>
+    <plugin name='controllers' version='1.1 &gt; *' />
+  </runtimePluginRequirements>
+  <behavior />
 </plugin>
