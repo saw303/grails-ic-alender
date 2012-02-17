@@ -22,7 +22,7 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 class ICalendarGrailsPlugin {
-	def version = "0.3.3" // added by set-version
+	def version = "0.3.4-SNAPSHOT" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '1.1 > *'
@@ -38,8 +38,9 @@ class ICalendarGrailsPlugin {
 
     def author = "Silvio Wangler"
     def authorEmail = "silvio.wangler@gmail.com"
-    def title = "This plugin contains a builder to easily convert your event into the iCalendar format"
+    def title = "iCalendar Plug-in"
     def description = '''
+        This plugin contains a builder to easily convert your event into the iCalendar format.
         The plugin hooks replaces each render method that uses the contentType 'text/calendar'.
 	'''
 
