@@ -1,6 +1,11 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-import grails.test.GrailsUnitTestCase
-import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.component.VEvent
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import static junit.framework.Assert.assertEquals
+import static net.fortuna.ical4j.model.Component.VEVENT
 
 /*
 * Copyright 2007 the original author or authors.
@@ -22,25 +27,39 @@ import net.fortuna.ical4j.model.Component
  * @author Silvio Wangler
  */
 
-class BuilderTests extends GrailsUnitTestCase {
+class BuilderTests {
 
-    ICalendarBuilder builder
+    private ICalendarBuilder builder
 
-    protected void setUp() {
-        super.setUp()
+    @Before
+    void setUp() {
         this.builder = new ICalendarBuilder()
     }
 
-    protected void tearDown() {
-        super.tearDown()
+    @After
+    void tearDown() {
         this.builder = null
     }
 
+    @Test
     void testBuilderWritesCalendar() {
         builder.calender()
-        assertNull builder.cal
+        assert builder.cal == null
+    }
+    
+    @Test
+    void testWithOutExplicitOrganizerDeclaration() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1')
+            }
+        }
+        builder.cal.validate(true)
+        
+        assert builder.cal.getComponents(VEVENT)[0].getProperty(Property.ORGANIZER) != null
     }
 
+    @Test
     void testSimpleTwoEvents() {
 
         final eventDescription1 = 'Events description'
@@ -59,13 +78,103 @@ class BuilderTests extends GrailsUnitTestCase {
         println builder.cal
         builder.cal.validate(true) // throws an exception if its invalid
 
-        def events = builder.cal.getComponents(Component.VEVENT)
+        def events = builder.cal.getComponents(VEVENT)
 
-        assertEquals 2, events.size()
+        assert 2 == events.size()
 
         assertEquals 'wrong summary', 'Short info1', events[0].summary.value
         assertEquals 'wrong description', eventDescription1, events[0].description.value
         assertEquals 'wrong summary', 'Short info2', events[1].summary.value
         assertEquals 'wrong description', eventDescription2, events[1].description.value
+        
+        events.each { VEvent event ->
+            assert event.getProperty(Property.TZID).value == 'Europe/Zurich'
+            assert event.getProperty(Property.ORGANIZER).value =~ 'silvio\\.wangler@[a]{0,1}mail.com'
+            //assert event.getProperty(Property.ORGANIZER).getParameter(Parameter.CN)?.value == 'Silvio Wangler'
+        }
+    }
+
+    @Test
+    void testReminder() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                }
+            }
+        }
+        
+        builder.cal.validate()
+        
+        def events = builder.cal.getComponents(VEVENT)
+        
+        assert 1 == events.size()
+        VEvent event = events[0]
+        assert event.alarms.size() == 1
+        assert event.alarms[0].description.value == 'Alarm 123'
+        assert event.alarms[0].trigger.duration.days == 0
+        assert event.alarms[0].trigger.duration.hours == 0
+        assert event.alarms[0].trigger.duration.minutes == 5
+        assert event.alarms[0].trigger.duration.seconds == 0
+        assert event.getProperty(Property.TZID).value == 'Europe/Zurich'
+        
+        println builder.cal.toString()
+    }
+
+    @Test
+    void testSetDifferentTimeZoneLondon() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'Europe/London') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                }
+            }
+        }
+
+        builder.cal.validate()
+
+        def events = builder.cal.getComponents(VEVENT)
+
+        assert 1 == events.size()
+        VEvent event = events[0]
+        assert event.getProperty(Property.TZID).value == 'Europe/London'
+
+        println builder.cal.toString()
+    }
+
+    @Test
+    void testSetDifferentTimeZoneMontreal() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'America/Montreal') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                }
+            }
+        }
+
+        builder.cal.validate()
+
+        def events = builder.cal.getComponents(VEVENT)
+
+        assert 1 == events.size()
+        VEvent event = events[0]
+        assert event.getProperty(Property.TZID).value == 'America/Montreal'
+
+        println builder.cal.toString()
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    void testSetDifferentTimeZoneUS() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'US-Eastern:20110928T110000') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                }
+            }
+        }
     }
 }
