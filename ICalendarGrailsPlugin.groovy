@@ -47,6 +47,23 @@ class ICalendarGrailsPlugin {
     // URL to the plugin's documentation
     def documentation = 'http://grails.org/ICalendar+Plugin'
 
+    // Extra (optional) plugin metadata
+
+    // License: one of 'APACHE', 'GPL2', 'GPL3'
+    def license = "APACHE"
+
+    // Details of company behind the plugin (if there is one)
+    def organization = [ name: "Silvio Wangler Software Development", url: "http://www.silviowangler.ch/" ]
+
+    // Any additional developers beyond the author specified above.
+    def developers = [ [ name: "Silvio Wangler", email: "silvio.wangler@gmail.com" ]]
+
+    // Location of the plugin's issue tracker.
+    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPICALENDAR" ]
+
+    // Online location of the plugin's browseable source code.
+    def scm = [ url: "https://github.com/saw303/grails-ic-alender" ]
+
     def doWithSpring = {
         // do nothing yet
     }
