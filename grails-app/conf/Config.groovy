@@ -10,3 +10,5 @@ log4j = {
 
     debug 'ch.silviowangler.groovy.util.builder.ICalendarBuilder', 'groovy.util'
 }
+grails.views.default.codec="none" // none, html, base64
+grails.views.gsp.encoding="UTF-8"

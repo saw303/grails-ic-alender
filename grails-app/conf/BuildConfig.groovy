@@ -25,7 +25,7 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-		compile 'org.mnode.ical4j:ical4j:1.0.3'
+		compile 'org.mnode.ical4j:ical4j:1.0.4'
 
         // due to a bug (http://jira.grails.org/browse/GPICALENDAR-7) a transient dependency of iCal4j needs to be defined as
         // direct dependency

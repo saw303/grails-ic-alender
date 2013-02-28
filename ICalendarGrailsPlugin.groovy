@@ -1,5 +1,4 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 
 /*
@@ -22,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 class ICalendarGrailsPlugin {
-	def version = "0.3.4" // added by set-version
+    def version = "0.3.5" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '1.1 > *'
@@ -53,38 +52,38 @@ class ICalendarGrailsPlugin {
     def license = "APACHE"
 
     // Details of company behind the plugin (if there is one)
-    def organization = [ name: "Silvio Wangler Software Development", url: "http://www.silviowangler.ch/" ]
+    def organization = [name: "Silvio Wangler Software Development", url: "http://www.silviowangler.ch/"]
 
     // Any additional developers beyond the author specified above.
-    def developers = [ [ name: "Silvio Wangler", email: "silvio.wangler@gmail.com" ]]
+    def developers = [[name: "Silvio Wangler", email: "silvio.wangler@gmail.com"]]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPICALENDAR" ]
+    def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPICALENDAR"]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "https://github.com/saw303/grails-ic-alender" ]
+    def scm = [url: "https://github.com/saw303/grails-ic-alender"]
 
     def doWithSpring = {
         // do nothing yet
     }
 
-    def doWithApplicationContext = {applicationContext ->
+    def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
     }
 
-    def doWithWebDescriptor = {xml ->
+    def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional)
     }
 
-    def doWithDynamicMethods = {ctx ->
+    def doWithDynamicMethods = { ctx ->
 
         // hooking into render method
-        application.controllerClasses.each() {controllerClass ->
+        application.controllerClasses.each() { controllerClass ->
             replaceRenderMethod(controllerClass)
         }
     }
 
-    def onChange = {event ->
+    def onChange = { event ->
 
         // only process controller classes
         if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
@@ -93,7 +92,7 @@ class ICalendarGrailsPlugin {
         }
     }
 
-    def onConfigChange = {event ->
+    def onConfigChange = { event ->
         // The event is the same as for 'onChange'.
     }
 
@@ -108,7 +107,7 @@ class ICalendarGrailsPlugin {
 
         def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
-        controllerClass.metaClass.render = {Map params, Closure closure ->
+        controllerClass.metaClass.render = { Map params, Closure closure ->
 
             if ('text/calendar'.equalsIgnoreCase(params.contentType)) {
 
@@ -117,9 +116,14 @@ class ICalendarGrailsPlugin {
                 def builder = new ICalendarBuilder()
                 builder.invokeMethod('translate', closure)
 
-                render (contentType : MIME_TYPE_TEXT_CALENDAR,
-                        text: builder.toString(),
-                        encoding:params.characterEncoding ?: 'UTF-8')
+                if (params.filename) {
+                    response.setHeader 'Content-Disposition', "inline; filename=\"${params.filename}\""
+                }
+
+                response.contentType = MIME_TYPE_TEXT_CALENDAR
+                response.characterEncoding = params.characterEncoding ?: 'UTF-8'
+                response.outputStream << builder.toString()
+                response.outputStream.flush()
 
             } else {
                 // Defer to original render method

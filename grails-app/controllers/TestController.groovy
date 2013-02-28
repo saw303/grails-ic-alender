@@ -18,7 +18,7 @@ class TestController {
 
   def index = {
 
-    render(contentType: 'text/calendar') {
+    render(contentType: 'text/calendar', filename: 'testfilename.ics') {
       calendar {
         events {
           event(start: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 15:00'), description: 'Events description', summary: 'Short info1') {
