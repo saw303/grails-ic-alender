@@ -1,0 +1,10 @@
+#########################
+## Grails
+#########################
+web-app/WEB-INF/*
+target
+prodDb.*
+stacktrace.log
+old
+.classpath
+.project
