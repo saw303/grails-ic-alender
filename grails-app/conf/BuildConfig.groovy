@@ -3,7 +3,6 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-grails.project.repos.default = "grailsCentral"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.dependency.resolution = {
@@ -16,6 +15,7 @@ grails.project.dependency.resolution = {
     legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
     repositories {
         grailsCentral()
+        grailsRepo "http://grails.org/plugins"
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenCentral()

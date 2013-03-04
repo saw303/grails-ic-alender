@@ -8,15 +8,10 @@
 	</description>
   <documentation>http://grails.org/ICalendar+Plugin</documentation>
   <type>ICalendarGrailsPlugin</type>
-  <resources>
-    <resource>TestController</resource>
-  </resources>
+  <resources />
   <repositories>
-    <repository name='grailsCentral' url='http://plugins.grails.org' />
-    <repository name='http://repo.grails.org/grails/plugins' url='http://repo.grails.org/grails/plugins/' />
-    <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
-    <repository name='grailsCore' url='http://svn.codehaus.org/grails/trunk/grails-plugins' />
-    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='http://grails.org/plugins' url='http://grails.org/plugins' />
   </repositories>
   <dependencies>
     <compile>
