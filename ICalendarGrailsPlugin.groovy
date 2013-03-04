@@ -24,9 +24,9 @@ class ICalendarGrailsPlugin {
     def version = "0.3.5" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = '1.1 > *'
+    def grailsVersion = '2.0.0 > *'
     // the other plugins this plugin depends on
-    def dependsOn = [controllers: '1.1 > *']
+    def dependsOn = [controllers: '2.0.0 > *']
     def loadAfter = ['controllers']
     def observe = ['controllers']
     // resources that are excluded from plugin packaging

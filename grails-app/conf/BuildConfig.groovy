@@ -3,6 +3,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
+grails.project.repos.default = "grailsCentral"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.dependency.resolution = {
@@ -12,6 +13,7 @@ grails.project.dependency.resolution = {
         // excludes 'ehcache'
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
     repositories {
         grailsCentral()
         // uncomment the below to enable remote dependency resolution
@@ -25,7 +27,7 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-		compile 'org.mnode.ical4j:ical4j:1.0.4'
+        compile 'org.mnode.ical4j:ical4j:1.0.4'
 
         // due to a bug (http://jira.grails.org/browse/GPICALENDAR-7) a transient dependency of iCal4j needs to be defined as
         // direct dependency
@@ -36,9 +38,9 @@ grails.project.dependency.resolution = {
 
     plugins {
         build(":tomcat:$grailsVersion",
-              ":release:1.0.0") {
+                ":release:2.2.0",
+                ":rest-client-builder:1.0.3") {
             export = false
         }
-		//compile ':springcache:1.3.1'
     }
 }

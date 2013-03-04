@@ -8,3 +8,5 @@ stacktrace.log
 old
 .classpath
 .project
+*.iml
+.idea
