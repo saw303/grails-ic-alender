@@ -61,14 +61,8 @@ public class ICalendarBuilder extends BuilderSupport {
      * Entry point for external (not inline) closures such as
      *
      * <pre>
-     * def c = {
-     *   calender {
-     *         events {
-     *                 ....
-     *                }
-     *         }
-     * }
-     * builder.invokeMethod('translate', c)
+     * def c = {*   calender {*         events {*                 ....
+     *}*}*}* builder.invokeMethod('translate', c)
      * </pre>
      * @since 0.2
      */
@@ -151,8 +145,10 @@ public class ICalendarBuilder extends BuilderSupport {
         }
         VTimeZone tz = timezone.vTimeZone
 
-        currentEvent = new VEvent(new DateTime(params.start),
-                new DateTime(params.end), params.summary)
+        currentEvent = new VEvent(new DateTime(params.start), new DateTime(params.end), params.summary)
+        currentEvent.getStartDate().setTimeZone(timezone)
+        currentEvent.getEndDate().setTimeZone(timezone)
+
         /*
        set internet address to null otherwise it takes awful lots of time to resolve a hostname or ip address
         */
