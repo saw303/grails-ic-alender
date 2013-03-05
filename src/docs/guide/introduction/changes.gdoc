@@ -1,0 +1,14 @@
+h3. What's new in 0.3.6?
+tbd / not yet released
+
+* Add timezone to start and end date of each event
+
+h3. What's new in 0.3.5?
+h4. Setting the filename of your ics export
+In this release render takes a new optional parameter called @filename@ to tell the browser to save the file using that given filename.
+
+{code}
+render(contentType: 'text/calendar', filename: 'my-events.ics') {
+    // your content
+}
+{code}

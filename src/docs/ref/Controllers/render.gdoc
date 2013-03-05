@@ -1,0 +1,44 @@
+h1. render
+
+h2. Examples
+{code}
+// renders a calendar with one event. Usually that is all you need.
+render(contentType: 'text/calendar') {
+    calendar {
+        events {
+            event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1')
+        }
+    }
+}
+
+// renders an event with reminder and organizer information. additionally it sets a filename
+render(contentType: 'text/calendar', filename: 'my-events.ics') {
+    calendar {
+        events {
+            event(start: new Date(), end: new Date().next(), summary: 'Text') {
+                organizer(name:'Silvio', email:'abc@ch.ch')
+                reminder(minutesBefore: 5, description: 'Alarm 123')
+        }
+    }
+}
+
+// setting event in a different timezone
+render(contentType: 'text/calendar', filename: 'my-events.ics') {
+    calendar {
+        events {
+            event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'Europe/London') {
+                organizer(name:'Silvio', email:'abc@ch.ch')
+                reminder(minutesBefore: 5, description: 'Alarm 123')
+        }
+    }
+}
+{code}
+
+h2. Description
+
+To render event closure to the iCalendar format. By default this plugin operates by using the timezone @Europe/Zurich@ that uses @CET@ _(Central European Time)_.
+
+Parameters:
+
+* @contentType@ (mandatory) - The content type. This plugin only takes action if you set the value 'text/calendar'. Any other value is delegate to the original implementation of the Grails render method.
+* @filename@ (optional) - Tell the browser to use this filename to save the ics output _(since version 0.3.5)_

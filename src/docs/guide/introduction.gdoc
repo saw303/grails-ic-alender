@@ -1,0 +1,1 @@
+The Grails iCalendar plugin helps you to easily export ics events by extending the controllers [render method|http://grails.org/doc/latest/ref/Controllers/render.html].

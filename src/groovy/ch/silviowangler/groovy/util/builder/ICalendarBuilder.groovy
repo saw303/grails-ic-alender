@@ -146,8 +146,8 @@ public class ICalendarBuilder extends BuilderSupport {
         VTimeZone tz = timezone.vTimeZone
 
         currentEvent = new VEvent(new DateTime(params.start), new DateTime(params.end), params.summary)
-        currentEvent.getStartDate().setTimeZone(timezone)
-        currentEvent.getEndDate().setTimeZone(timezone)
+        currentEvent.startDate.timeZone = timezone
+        currentEvent.endDate.timeZone = timezone
 
         /*
        set internet address to null otherwise it takes awful lots of time to resolve a hostname or ip address
