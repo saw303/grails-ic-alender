@@ -2,6 +2,10 @@
 ## Grails
 #########################
 web-app/WEB-INF/*
+web-app/images/*
+web-app/js/*
+web-app/css/*
+grails-app/i18n/*
 target
 prodDb.*
 stacktrace.log
