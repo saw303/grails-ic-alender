@@ -145,7 +145,8 @@ public class ICalendarBuilder extends BuilderSupport {
         }
         VTimeZone tz = timezone.vTimeZone
 
-        currentEvent = new VEvent(new DateTime(params.start), new DateTime(params.end), params.summary)
+        final dateFormat = 'dd.MM.yyyy HH:mm'
+        currentEvent = new VEvent(new DateTime(params.start.format(dateFormat), dateFormat, timezone), new DateTime(params.end.format(dateFormat), dateFormat, timezone), params.summary)
         currentEvent.startDate.timeZone = timezone
         currentEvent.endDate.timeZone = timezone
 

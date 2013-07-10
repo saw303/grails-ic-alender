@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 class ICalendarGrailsPlugin {
-    def version = "0.3.5" // added by set-version
+    def version = "0.3.6" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '2.0.0 > *'

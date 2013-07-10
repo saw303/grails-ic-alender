@@ -90,7 +90,6 @@ class BuilderTests {
         events.each { VEvent event ->
             assert event.getProperty(Property.TZID).value == 'Europe/Zurich'
             assert event.getProperty(Property.ORGANIZER).value =~ 'silvio\\.wangler@[a]{0,1}mail.com'
-            //assert event.getProperty(Property.ORGANIZER).getParameter(Parameter.CN)?.value == 'Silvio Wangler'
         }
     }
 
