@@ -1,4 +1,4 @@
-<plugin name='ic-alendar' version='0.3.6' grailsVersion='2.0.0 &gt; *'>
+<plugin name='ic-alendar' version='0.3.7' grailsVersion='2.0.0 &gt; *'>
   <author>Silvio Wangler</author>
   <authorEmail>silvio.wangler@gmail.com</authorEmail>
   <title>iCalendar Plug-in</title>
@@ -6,7 +6,7 @@
         This plugin contains a builder to easily convert your event into the iCalendar format.
         The plugin hooks replaces each render method that uses the contentType 'text/calendar'.
 	</description>
-  <documentation>http://grails.org/ICalendar+Plugin</documentation>
+  <documentation>http://grails.org/plugin/ic-alendar</documentation>
   <type>ICalendarGrailsPlugin</type>
   <resources />
   <repositories>
