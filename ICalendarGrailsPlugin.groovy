@@ -44,7 +44,7 @@ class ICalendarGrailsPlugin {
 	'''
 
     // URL to the plugin's documentation
-    def documentation = 'http://grails.org/ICalendar+Plugin'
+    def documentation = 'http://grails.org/plugin/ic-alendar'
 
     // Extra (optional) plugin metadata
 
@@ -58,7 +58,7 @@ class ICalendarGrailsPlugin {
     def developers = [[name: "Silvio Wangler", email: "silvio.wangler@gmail.com"]]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPICALENDAR"]
+    def issueManagement = [system: "Github", url: "https://github.com/saw303/grails-ic-alender/issues"]
 
     // Online location of the plugin's browseable source code.
     def scm = [url: "https://github.com/saw303/grails-ic-alender"]
@@ -68,11 +68,11 @@ class ICalendarGrailsPlugin {
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
+        // Implement post initialization spring config (optional)
     }
 
     def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional)
+        // Implement additions to web.xml (optional)
     }
 
     def doWithDynamicMethods = { ctx ->
