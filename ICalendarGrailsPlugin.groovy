@@ -103,7 +103,7 @@ class ICalendarGrailsPlugin {
      */
     private void replaceRenderMethod(controllerClass) {
 
-        println "Modifying render method on controller '${controllerClass.name}'"
+        log.info "Modifying render method on controller '${controllerClass.name}'"
 
         def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
