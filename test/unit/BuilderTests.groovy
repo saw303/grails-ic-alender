@@ -165,6 +165,27 @@ class BuilderTests {
         println builder.cal.toString()
     }
 
+    @Test
+    void testAddCategories() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text', categories: 'icehockey, sports') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                }
+            }
+        }
+
+        builder.cal.validate()
+
+        def events = builder.cal.getComponents(VEVENT)
+
+        assert 1 == events.size()
+        VEvent event = events[0]
+        assert event.getProperty(Property.CATEGORIES).value == 'icehockey, sports'
+
+        println builder.cal.toString()
+    }
+
     @Test(expected = IllegalArgumentException.class)
     void testSetDifferentTimeZoneUS() {
         builder.calendar {

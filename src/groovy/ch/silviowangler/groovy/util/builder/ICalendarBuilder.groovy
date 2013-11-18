@@ -1,14 +1,13 @@
 package ch.silviowangler.groovy.util.builder
 
+import net.fortuna.ical4j.model.*
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.*
 import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import net.fortuna.ical4j.model.*
-import net.fortuna.ical4j.model.property.*
-
 /*
  * Copyright 2007 the original author or authors.
  *
@@ -90,6 +89,7 @@ public class ICalendarBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object o, Object o1) {
+        log.error("Unsupported mode. Create node with params ${o} and ${o1}")
         throw new RuntimeException('Unsupported mode')
     }
 
@@ -158,6 +158,7 @@ public class ICalendarBuilder extends BuilderSupport {
         if (params.location) currentEvent.properties << new Location(params.location)
         if (params.description) currentEvent.properties << new Description(params.description)
         if (params.classification) currentEvent.properties << getClazz(params.classification)
+        if (params.categories) currentEvent.properties << new Categories(params.categories)
         currentEvent.properties << new Organizer()
         this.cal.components << currentEvent
     }
