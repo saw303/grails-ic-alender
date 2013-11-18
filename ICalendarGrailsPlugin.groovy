@@ -1,5 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
+import org.slf4j.LoggerFactory
 
 /*
  * Copyright 2007 the original author or authors.
@@ -103,7 +104,7 @@ class ICalendarGrailsPlugin {
      */
     private void replaceRenderMethod(controllerClass) {
 
-        log.info "Modifying render method on controller '${controllerClass.name}'"
+        println "Modifying render method on controller '${controllerClass.name}'"
 
         def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
