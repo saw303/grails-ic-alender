@@ -4,8 +4,14 @@ import net.fortuna.ical4j.model.component.VEvent
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+
 import static junit.framework.Assert.assertEquals
 import static net.fortuna.ical4j.model.Component.VEVENT
+import static net.fortuna.ical4j.model.parameter.CuType.INDIVIDUAL
+import static net.fortuna.ical4j.model.parameter.PartStat.NEEDS_ACTION
+import static net.fortuna.ical4j.model.parameter.Role.REQ_PARTICIPANT
+import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
+import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 
 /*
 * Copyright 2007 the original author or authors.
@@ -196,5 +202,28 @@ class BuilderTests {
                 }
             }
         }
+    }
+
+    @Test
+    void testSupportAttendee() {
+        builder.calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text') {
+                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                    attendees {
+                        attendee(email:'a@b.ch', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
+                        attendee(email:'a@b.it', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
+                    }
+                }
+            }
+        }
+        def events = builder.cal.getComponents(VEVENT)
+
+        assert 1 == events.size()
+        VEvent event = events[0]
+        assert event.getProperty(Property.ATTENDEE)
+
+        println builder.cal.toString()
     }
 }

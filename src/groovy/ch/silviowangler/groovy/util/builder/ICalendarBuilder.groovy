@@ -4,10 +4,15 @@ import net.fortuna.ical4j.model.*
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.parameter.CuType
+import net.fortuna.ical4j.model.parameter.PartStat
+import net.fortuna.ical4j.model.parameter.Role
+import net.fortuna.ical4j.model.parameter.Rsvp
 import net.fortuna.ical4j.model.property.*
 import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+
 /*
  * Copyright 2007 the original author or authors.
  *
@@ -38,6 +43,8 @@ public class ICalendarBuilder extends BuilderSupport {
     private static final String CLOSURE_NAME_ORGANIZER = 'organizer'
     private static final String CLOSURE_NAME_REMINDER = 'reminder'
     private static final String CLOSURE_NAME_EVENTS = 'events'
+    private static final String CLOSURE_NAME_ATTENDEES = 'attendees'
+    private static final String CLOSURE_NAME_ATTENDEE = 'attendee'
     private Log log = LogFactory.getLog(ICalendarBuilder.class)
     private Calendar cal
     private VEvent currentEvent
@@ -45,7 +52,8 @@ public class ICalendarBuilder extends BuilderSupport {
     /**
      * Declares a parent/child relations
      */
-    public static final Map PARENT_CHILD_CONSTRAINTS = ['calendar': [CLOSURE_NAME_EVENTS], 'events': [CLOSURE_NAME_EVENT], 'event': [CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER]]
+    public static
+    final Map PARENT_CHILD_CONSTRAINTS = ['calendar': [CLOSURE_NAME_EVENTS], 'events': [CLOSURE_NAME_EVENT], 'event': [CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES], 'attendees': [CLOSURE_NAME_ATTENDEE]]
 
     /**
      * Default constructor
@@ -74,7 +82,8 @@ public class ICalendarBuilder extends BuilderSupport {
     protected void setParent(Object parent, Object child) {
 
         log.debug "set parent '$parent' on child '$child'"
-        if (parent == 'translate') return // skip it because its the special entry if the builder is not working in inline mode
+        if (parent == 'translate') return
+        // skip it because its the special entry if the builder is not working in inline mode
 
         if (!PARENT_CHILD_CONSTRAINTS[parent]?.contains(child)) {
             if (!PARENT_CHILD_CONSTRAINTS[parent]) throw new IllegalArgumentException("Unkown element $parent")
@@ -120,6 +129,29 @@ public class ICalendarBuilder extends BuilderSupport {
             alarm.properties << new Description(params.description)
             alarm.properties << Action.DISPLAY
             currentEvent.alarms << alarm
+        }
+
+        if (nodeName == 'attendee') {
+            def attendee = new Attendee(URI.create("mailto:${params.email}"))
+
+            if (params.role && params.role instanceof Role) {
+                attendee.getParameters().add(params.role)
+            }
+
+            if (params.partstat && params.partstat instanceof PartStat) {
+                attendee.getParameters().add(params.partstat)
+            }
+
+            if (params.cutype && params.cutype instanceof CuType) {
+                attendee.getParameters().add(params.cutype)
+            }
+
+            if (params.rsvp && params.rsvp instanceof Rsvp) {
+                attendee.getParameters().add(params.rsvp)
+            }
+
+
+            currentEvent.properties << attendee
         }
 
 
