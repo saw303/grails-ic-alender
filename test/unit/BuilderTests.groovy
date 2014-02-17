@@ -1,12 +1,15 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
+import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.property.Attendee
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
 import static junit.framework.Assert.assertEquals
 import static net.fortuna.ical4j.model.Component.VEVENT
+import static net.fortuna.ical4j.model.Property.ATTENDEE
 import static net.fortuna.ical4j.model.parameter.CuType.INDIVIDUAL
 import static net.fortuna.ical4j.model.parameter.PartStat.NEEDS_ACTION
 import static net.fortuna.ical4j.model.parameter.Role.REQ_PARTICIPANT
@@ -222,8 +225,15 @@ class BuilderTests {
 
         assert 1 == events.size()
         VEvent event = events[0]
-        assert event.getProperty(Property.ATTENDEE)
+        assert event.getProperties(ATTENDEE).size() == 2
 
+        for (Attendee attendee : event.getProperties(ATTENDEE)) {
+            assert attendee.calAddress.toASCIIString() =~ /mailto:a@b\.(ch|it)/
+            assert attendee.getParameter('ROLE') == REQ_PARTICIPANT
+            assert attendee.getParameter('PARTSTAT') == NEEDS_ACTION
+            assert attendee.getParameter('CUTYPE') == INDIVIDUAL
+            assert attendee.getParameter('RSVP') != null
+        }
         println builder.cal.toString()
     }
 }
