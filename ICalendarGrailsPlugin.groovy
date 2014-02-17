@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
 class ICalendarGrailsPlugin {
-    def version = "0.3.9" // added by set-version
+    def version = "0.4.0" // added by set-version
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = '2.0.0 > *'
