@@ -29,6 +29,18 @@
       }
     }
 
-This plugin uses ical4j api and is therefore iCal RFC compliant. The output has been tested against the Google calendar importer and Mozilla Sunbird.
+This plugin uses the [ical4j][ical4j] API and is therefore iCal RFC compliant. The output has been tested against the Google calendar importer, Microsoft Outlook and Mozilla Sunbird.
 
-The plugin is at the current stage of development limited to events only. That means that you currently can only export VEVENTS.
+The plugin is at the current stage of development limited to events only. That means that you currently can only export `VEVENTS`.
+
+## What else can you do?
+
+This documentation does not claim to cover all the features that are implemented in the iCalendar plugin.
+But there is a [Unit Test Suite][unittest] that covers the feature set of this plugin and therefore a very good entry point if you
+are looking for an overview.
+
+
+
+
+[ical4j]: http://wiki.modularity.net.au/ical4j/index.php?title=Main_Page
+[unittest]: https://github.com/saw303/grails-ic-alender/blob/master/test/unit/BuilderTests.groovy
