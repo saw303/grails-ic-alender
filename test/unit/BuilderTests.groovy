@@ -1,5 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-import net.fortuna.ical4j.model.Parameter
+import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
@@ -7,7 +8,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import static junit.framework.Assert.assertEquals
 import static net.fortuna.ical4j.model.Component.VEVENT
 import static net.fortuna.ical4j.model.Property.ATTENDEE
 import static net.fortuna.ical4j.model.parameter.CuType.INDIVIDUAL
@@ -35,7 +35,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 /**
  * @author Silvio Wangler
  */
-
+@TestMixin(GrailsUnitTestMixin)
 class BuilderTests {
 
     private ICalendarBuilder builder
