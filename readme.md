@@ -39,8 +39,22 @@ This documentation does not claim to cover all the features that are implemented
 But there is a [Unit Test Suite][unittest] that covers the feature set of this plugin and therefore a very good entry point if you
 are looking for an overview.
 
+### Invite attendees
 
-
+    render(contentType: 'text/calendar') {
+        calendar {
+            events {
+                event(start: new Date(), end: (new Date()).next(), summary: 'We need to talk') {
+                    organizer(name:"Peter O'Brien", email:'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Your meeting starts in 5 minutes!')
+                    attendees {
+                        attendee(email:'bill.gates@microsoft.com', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
+                        attendee(email:'carmen.breeze@google.com', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
+                    }
+                }
+            }
+        }
+    }
 
 [ical4j]: http://wiki.modularity.net.au/ical4j/index.php?title=Main_Page
 [unittest]: https://github.com/saw303/grails-ic-alender/blob/master/test/unit/BuilderTests.groovy
