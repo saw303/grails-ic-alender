@@ -45,7 +45,7 @@ class ICalendarGrailsPlugin {
 	'''
 
     // URL to the plugin's documentation
-    def documentation = 'http://grails.org/plugin/ic-alendar'
+    def documentation = 'http://github.com/saw303/grails-ic-alender'
 
     // Extra (optional) plugin metadata
 
