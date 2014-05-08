@@ -1,6 +1,7 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
@@ -9,7 +10,8 @@ import org.junit.Before
 import org.junit.Test
 
 import static net.fortuna.ical4j.model.Component.VEVENT
-import static net.fortuna.ical4j.model.Property.ATTENDEE
+import static net.fortuna.ical4j.model.Parameter.CN
+import static net.fortuna.ical4j.model.Property.*
 import static net.fortuna.ical4j.model.parameter.CuType.INDIVIDUAL
 import static net.fortuna.ical4j.model.parameter.PartStat.NEEDS_ACTION
 import static net.fortuna.ical4j.model.parameter.Role.REQ_PARTICIPANT
@@ -65,7 +67,7 @@ class BuilderTests {
         }
         builder.cal.validate(true)
         
-        assert builder.cal.getComponents(VEVENT)[0].getProperty(Property.ORGANIZER) != null
+        assert builder.cal.getComponents(VEVENT)[0].getProperty(ORGANIZER) != null
     }
 
     @Test
@@ -97,8 +99,10 @@ class BuilderTests {
         assertEquals 'wrong description', eventDescription2, events[1].description.value
         
         events.each { VEvent event ->
-            assert event.getProperty(Property.TZID).value == 'Europe/Zurich'
-            assert event.getProperty(Property.ORGANIZER).value =~ 'silvio\\.wangler@[a]{0,1}mail.com'
+            assert event.getProperty(TZID).value == 'Europe/Zurich'
+            assert event.getProperty(ORGANIZER).value ==~ /mailto:silvio\.wangler@[a]{0,1}mail.com/
+            assert event.getProperty(ORGANIZER).parameters.size() == 1
+            assert event.getProperty(ORGANIZER).parameters.getParameter(CN).value == 'Silvio Wangler'
         }
     }
 
@@ -125,7 +129,7 @@ class BuilderTests {
         assert event.alarms[0].trigger.duration.hours == 0
         assert event.alarms[0].trigger.duration.minutes == 5
         assert event.alarms[0].trigger.duration.seconds == 0
-        assert event.getProperty(Property.TZID).value == 'Europe/Zurich'
+        assert event.getProperty(TZID).value == 'Europe/Zurich'
         
         println builder.cal.toString()
     }
@@ -147,7 +151,7 @@ class BuilderTests {
 
         assert 1 == events.size()
         VEvent event = events[0]
-        assert event.getProperty(Property.TZID).value == 'Europe/London'
+        assert event.getProperty(TZID).value == 'Europe/London'
 
         println builder.cal.toString()
     }
@@ -169,7 +173,7 @@ class BuilderTests {
 
         assert 1 == events.size()
         VEvent event = events[0]
-        assert event.getProperty(Property.TZID).value == 'America/Montreal'
+        assert event.getProperty(TZID).value == 'America/Montreal'
 
         println builder.cal.toString()
     }
@@ -190,7 +194,7 @@ class BuilderTests {
 
         assert 1 == events.size()
         VEvent event = events[0]
-        assert event.getProperty(Property.CATEGORIES).value == 'icehockey, sports'
+        assert event.getProperty(CATEGORIES).value == 'icehockey, sports'
 
         println builder.cal.toString()
     }

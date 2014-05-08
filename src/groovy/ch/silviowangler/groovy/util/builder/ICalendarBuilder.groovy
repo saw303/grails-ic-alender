@@ -4,14 +4,13 @@ import net.fortuna.ical4j.model.*
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
-import net.fortuna.ical4j.model.parameter.CuType
-import net.fortuna.ical4j.model.parameter.PartStat
-import net.fortuna.ical4j.model.parameter.Role
-import net.fortuna.ical4j.model.parameter.Rsvp
+import net.fortuna.ical4j.model.parameter.*
 import net.fortuna.ical4j.model.property.*
 import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+
+import static net.fortuna.ical4j.model.Property.ORGANIZER
 
 /*
  * Copyright 2007 the original author or authors.
@@ -45,15 +44,21 @@ public class ICalendarBuilder extends BuilderSupport {
     private static final String CLOSURE_NAME_EVENTS = 'events'
     private static final String CLOSURE_NAME_ATTENDEES = 'attendees'
     private static final String CLOSURE_NAME_ATTENDEE = 'attendee'
-    private Log log = LogFactory.getLog(ICalendarBuilder.class)
+    private static final Log log = LogFactory.getLog(this)
     private Calendar cal
     private VEvent currentEvent
 
     /**
      * Declares a parent/child relations
      */
-    public static
-    final Map PARENT_CHILD_CONSTRAINTS = ['calendar': [CLOSURE_NAME_EVENTS], 'events': [CLOSURE_NAME_EVENT], 'event': [CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES], 'attendees': [CLOSURE_NAME_ATTENDEE]]
+    public static final Map<String, List<String>> PARENT_CHILD_CONSTRAINTS = [
+            'calendar' : [CLOSURE_NAME_EVENTS],
+            'events'   : [CLOSURE_NAME_EVENT],
+            'event'    : [
+                    CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES
+            ],
+            'attendees': [CLOSURE_NAME_ATTENDEE]
+    ]
 
     /**
      * Default constructor
@@ -110,17 +115,14 @@ public class ICalendarBuilder extends BuilderSupport {
 
         if (nodeName == CLOSURE_NAME_ORGANIZER) {
 
-            Organizer _organizer = currentEvent.getProperty(Property.ORGANIZER)
-
+            Organizer _organizer = currentEvent.getProperty(ORGANIZER)
 
             if (params.email) {
                 _organizer.value = "mailto:${params.email}"
             }
-            /*
-            // If you uncomment this it will brake all test. No idea what is going wrong
             if (params.name) {
-                _organizer.parameters << new Cn(params.name)
-            }*/
+                _organizer.parameters.add new Cn(params.name)
+            }
         }
 
         if (nodeName == CLOSURE_NAME_REMINDER && params.minutesBefore && params.description) {
@@ -149,8 +151,6 @@ public class ICalendarBuilder extends BuilderSupport {
             if (params.rsvp && params.rsvp instanceof Rsvp) {
                 attendee.getParameters().add(params.rsvp)
             }
-
-
             currentEvent.properties << attendee
         }
 
