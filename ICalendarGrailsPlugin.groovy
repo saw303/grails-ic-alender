@@ -1,6 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
-import org.slf4j.LoggerFactory
+
+import static org.codehaus.groovy.grails.commons.ControllerArtefactHandler.TYPE
 
 /*
  * Copyright 2007 the original author or authors.
@@ -87,7 +87,7 @@ class ICalendarGrailsPlugin {
     def onChange = { event ->
 
         // only process controller classes
-        if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
+        if (application.isArtefactOfType(TYPE, event.source)) {
             def clazz = application.getControllerClass(event.source?.name)
             replaceRenderMethod(clazz)
         }
@@ -110,9 +110,9 @@ class ICalendarGrailsPlugin {
 
         controllerClass.metaClass.render = { Map params, Closure closure ->
 
-            if ('text/calendar'.equalsIgnoreCase(params.contentType)) {
+            final String MIME_TYPE_TEXT_CALENDAR = 'text/calendar'
 
-                final String MIME_TYPE_TEXT_CALENDAR = 'text/calendar'
+            if (MIME_TYPE_TEXT_CALENDAR.equalsIgnoreCase(params.contentType)) {
 
                 def builder = new ICalendarBuilder()
                 builder.invokeMethod('translate', closure)
