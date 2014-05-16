@@ -177,10 +177,16 @@ public class ICalendarBuilder extends BuilderSupport {
         }
         VTimeZone tz = timezone.vTimeZone
 
+        def isUtc = params?.utc ?: false
+
         final dateFormat = 'dd.MM.yyyy HH:mm'
-        currentEvent = new VEvent(new DateTime(params.start.format(dateFormat), dateFormat, timezone), new DateTime(params.end.format(dateFormat), dateFormat, timezone), params.summary)
-        currentEvent.startDate.timeZone = timezone
-        currentEvent.endDate.timeZone = timezone
+
+        def startDate = new DateTime(params.start.format(dateFormat), dateFormat, timezone)
+        def endDate = new DateTime(params.end.format(dateFormat), dateFormat, timezone)
+        startDate.setUtc(isUtc)
+        endDate.setUtc(isUtc)
+
+        currentEvent = new VEvent(startDate, endDate, params.summary)
 
         /*
        set internet address to null otherwise it takes awful lots of time to resolve a hostname or ip address

@@ -1,8 +1,6 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import net.fortuna.ical4j.model.Parameter
-import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
 import org.junit.After
@@ -57,7 +55,7 @@ class BuilderTests {
         builder.calender()
         assert builder.cal == null
     }
-    
+
     @Test
     void testWithOutExplicitOrganizerDeclaration() {
         builder.calendar {
@@ -66,8 +64,28 @@ class BuilderTests {
             }
         }
         builder.cal.validate(true)
-        
-        assert builder.cal.getComponents(VEVENT)[0].getProperty(ORGANIZER) != null
+
+        final VEvent event = builder.cal.getComponents(VEVENT)[0]
+        assert event.getProperty(ORGANIZER) != null
+        assert !event.startDate.isUtc()
+        assert !event.endDate.isUtc()
+    }
+
+    @Test
+    void testUtcTime() {
+
+        builder.calendar {
+            events {
+                event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1', utc: true)
+            }
+        }
+        builder.cal.validate(true)
+
+        final VEvent event = builder.cal.getComponents(VEVENT)[0]
+        assert event.getProperty(ORGANIZER) != null
+        assert event.startDate.isUtc()
+        assert event.endDate.isUtc()
+
     }
 
     @Test
@@ -97,7 +115,7 @@ class BuilderTests {
         assertEquals 'wrong description', eventDescription1, events[0].description.value
         assertEquals 'wrong summary', 'Short info2', events[1].summary.value
         assertEquals 'wrong description', eventDescription2, events[1].description.value
-        
+
         events.each { VEvent event ->
             assert event.getProperty(TZID).value == 'Europe/Zurich'
             assert event.getProperty(ORGANIZER).value ==~ /mailto:silvio\.wangler@[a]{0,1}mail.com/
@@ -111,16 +129,16 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                 }
             }
         }
-        
+
         builder.cal.validate()
-        
+
         def events = builder.cal.getComponents(VEVENT)
-        
+
         assert 1 == events.size()
         VEvent event = events[0]
         assert event.alarms.size() == 1
@@ -130,7 +148,7 @@ class BuilderTests {
         assert event.alarms[0].trigger.duration.minutes == 5
         assert event.alarms[0].trigger.duration.seconds == 0
         assert event.getProperty(TZID).value == 'Europe/Zurich'
-        
+
         println builder.cal.toString()
     }
 
@@ -139,7 +157,7 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'Europe/London') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                 }
             }
@@ -161,7 +179,7 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'America/Montreal') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                 }
             }
@@ -183,7 +201,7 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', categories: 'icehockey, sports') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                 }
             }
         }
@@ -204,7 +222,7 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'US-Eastern:20110928T110000') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                 }
             }
@@ -216,11 +234,11 @@ class BuilderTests {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text') {
-                    organizer(name:'Silvio', email:'abc@ch.ch')
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                     attendees {
-                        attendee(email:'a@b.ch', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
-                        attendee(email:'a@b.it', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
+                        attendee(email: 'a@b.ch', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
+                        attendee(email: 'a@b.it', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
                     }
                 }
             }
