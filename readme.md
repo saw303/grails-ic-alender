@@ -64,7 +64,13 @@ UTC is set to `false`.
     render(contentType: 'text/calendar') {
         calendar {
             events {
-                event(start: new Date(), end: new Date(), description: 'Some large text', summary: 'Project stand up meeting', utc: true)
+                event(
+                    start: new Date(), 
+                    end: new Date(), 
+                    description: 'Some large text', 
+                    summary: 'Project stand up meeting', 
+                    utc: true // optional parameter (default = false)
+                )
             }
         }
     }
