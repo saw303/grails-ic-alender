@@ -55,6 +55,19 @@ are looking for an overview.
             }
         }
     }
+    
+### Use UTC dates
+
+Since `version 0.4.0` the plugin supports UTC dates. Each event accepts an optional parameter called `utc`. If the parameter is missing
+UTC is set to `false`.
+
+    render(contentType: 'text/calendar') {
+        calendar {
+            events {
+                event(start: new Date(), end: new Date(), description: 'Some large text', summary: 'Project stand up meeting', utc: true)
+            }
+        }
+    }
 
 [ical4j]: http://wiki.modularity.net.au/ical4j/index.php?title=Main_Page
 [unittest]: https://github.com/saw303/grails-ic-alender/blob/master/test/unit/BuilderTests.groovy
