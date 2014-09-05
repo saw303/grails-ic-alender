@@ -56,7 +56,7 @@ public class ICalendarBuilder extends BuilderSupport {
             'events'   : [CLOSURE_NAME_EVENT],
             'event'    : [
                     CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES
-            ],
+            ], 
             'attendees': [CLOSURE_NAME_ATTENDEE]
     ]
 
@@ -170,7 +170,9 @@ public class ICalendarBuilder extends BuilderSupport {
     private void handleEventNode(Map params, nodeName) {
 
         TimeZoneRegistry registry = TimeZoneRegistryFactory.instance.createRegistry()
-        TimeZone timezone = params.timezone ? registry.getTimeZone(params.timezone) : registry.getTimeZone('Europe/Zurich')
+        
+        TimeZone timezone = params.timezone ? registry.getTimeZone(params.timezone) : registry.getTimeZone(TimeZone.getDefault().getID())
+        
         if (!timezone) {
             log.debug("Time zone ${params.timezone} is not known by iCal4j")
             throw new IllegalArgumentException("Unknown time zone ${params.timezone}")
