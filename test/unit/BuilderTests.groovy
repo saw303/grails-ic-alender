@@ -7,6 +7,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+import static java.util.Calendar.*
 import static net.fortuna.ical4j.model.Component.VEVENT
 import static net.fortuna.ical4j.model.Parameter.CN
 import static net.fortuna.ical4j.model.Property.*
@@ -253,7 +254,7 @@ class BuilderTests {
     void testSupportAllDayEvents() {
         builder.calendar {
             events {
-                allDayEvent(date: new Date(), summary: 'Text') {
+                allDayEvent(date: Date.parse('dd.MM.yyyy HH:mm', '18.12.2015 13:00'), summary: 'Text') {
                     organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                     attendees {
@@ -266,7 +267,36 @@ class BuilderTests {
 
         VEvent event = builder.cal.getComponents(VEVENT)[0]
 
-        assert event.startDate
-        assert event.endDate == event.startDate
+        assert event.startDate.date.getAt(YEAR) == 2015
+        assert event.startDate.date.getAt(MONTH) == DECEMBER
+        assert event.startDate.date.getAt(DAY_OF_MONTH) == 18
+        assert event.endDate.date.getAt(YEAR) == 2015
+        assert event.endDate.date.getAt(MONTH) == DECEMBER
+        assert event.endDate.date.getAt(DAY_OF_MONTH) == 18
+    }
+
+    @Test
+    void testSupportAllDayEventsWithTextInput() {
+        builder.calendar {
+            events {
+                allDayEvent(date: '12.04.2013', summary: 'Text') {
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                    attendees {
+                        attendee(email: 'a@b.ch', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
+                        attendee(email: 'a@b.it', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
+                    }
+                }
+            }
+        }
+
+        VEvent event = builder.cal.getComponents(VEVENT)[0]
+
+        assert event.startDate.date.getAt(YEAR) == 2013
+        assert event.startDate.date.getAt(MONTH) == APRIL
+        assert event.startDate.date.getAt(DAY_OF_MONTH) == 12
+        assert event.endDate.date.getAt(YEAR) == 2013
+        assert event.endDate.date.getAt(MONTH) == APRIL
+        assert event.endDate.date.getAt(DAY_OF_MONTH) == 12
     }
 }

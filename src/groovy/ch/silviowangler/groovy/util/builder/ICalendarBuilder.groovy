@@ -10,9 +10,8 @@ import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import static net.fortuna.ical4j.model.Property.DTSTART
 import static net.fortuna.ical4j.model.Property.ORGANIZER
-import static net.fortuna.ical4j.model.parameter.Value.DATE
+import static net.fortuna.ical4j.util.Dates.PRECISION_DAY
 
 /*
  * Copyright 2007 the original author or authors.
@@ -193,8 +192,19 @@ public class ICalendarBuilder extends BuilderSupport {
             currentEvent = new VEvent(startDate, endDate, params.summary)
         }
         else if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) {
-            currentEvent = new VEvent(new Date(params.date), params.summary)
-            currentEvent.getProperties().getProperty(DTSTART).getParameters().add(DATE)
+
+            def date
+            if (params.date instanceof java.util.Date) {
+                date = new Date(params.date.time, PRECISION_DAY, timezone)
+            }
+            else if (params.date instanceof String) {
+                def final javaDate = java.util.Date.parse('dd.MM.yyyy', params.date)
+                date = new Date(javaDate.time, PRECISION_DAY, timezone)
+            }
+            else {
+                throw new UnsupportedOperationException("Unknown param type ${params.date?.class?.name} for attribute date")
+            }
+            currentEvent = new VEvent(date, params.summary)
         }
         else {
             throw new UnsupportedOperationException("Unknown node name ${nodeName}")
