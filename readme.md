@@ -80,7 +80,7 @@ UTC is set to `false`.
 
 ### All day events
 
-Version `0.4.1` introduces DSL support for all day events. You can use a String by defining a date like *12.10.2014*.
+Version `0.4.1` introduces DSL support for all day events. You can use a String by defining a date like `12.10.2014`.
 
 
     calendar {
@@ -92,7 +92,7 @@ Version `0.4.1` introduces DSL support for all day events. You can use a String 
         }
     }
 
-Currently there is a limitation that the date format has to be DD.MM.YYYY. The fix of this limitation will be address in a future release.
+Currently there is a limitation that the date format has to be `DD.MM.YYYY`. The fix of this limitation will be address in a future release.
 
 Another way is to simply provide a Date instance
 
