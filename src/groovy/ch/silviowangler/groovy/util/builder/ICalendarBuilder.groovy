@@ -10,7 +10,9 @@ import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+import static net.fortuna.ical4j.model.Property.DTSTART
 import static net.fortuna.ical4j.model.Property.ORGANIZER
+import static net.fortuna.ical4j.model.parameter.Value.DATE
 
 /*
  * Copyright 2007 the original author or authors.
@@ -39,11 +41,13 @@ import static net.fortuna.ical4j.model.Property.ORGANIZER
 public class ICalendarBuilder extends BuilderSupport {
 
     private static final String CLOSURE_NAME_EVENT = 'event'
+    private static final String CLOSURE_NAME_ALL_DAY_EVENT = 'allDayEvent'
     private static final String CLOSURE_NAME_ORGANIZER = 'organizer'
     private static final String CLOSURE_NAME_REMINDER = 'reminder'
     private static final String CLOSURE_NAME_EVENTS = 'events'
     private static final String CLOSURE_NAME_ATTENDEES = 'attendees'
     private static final String CLOSURE_NAME_ATTENDEE = 'attendee'
+    private static final String CLOSURE_NAME_CALENDAR = 'calendar'
     private static final Log log = LogFactory.getLog(this)
     private Calendar cal
     private VEvent currentEvent
@@ -52,12 +56,11 @@ public class ICalendarBuilder extends BuilderSupport {
      * Declares a parent/child relations
      */
     public static final Map<String, List<String>> PARENT_CHILD_CONSTRAINTS = [
-            'calendar' : [CLOSURE_NAME_EVENTS],
-            'events'   : [CLOSURE_NAME_EVENT],
-            'event'    : [
-                    CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES
-            ],
-            'attendees': [CLOSURE_NAME_ATTENDEE]
+            'calendar'   : [CLOSURE_NAME_EVENTS],
+            'events'     : [CLOSURE_NAME_EVENT, CLOSURE_NAME_ALL_DAY_EVENT],
+            'event'      : [CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES],
+            'allDayEvent': [CLOSURE_NAME_ORGANIZER, CLOSURE_NAME_REMINDER, CLOSURE_NAME_ATTENDEES],
+            'attendees'  : [CLOSURE_NAME_ATTENDEE]
     ]
 
     /**
@@ -109,19 +112,19 @@ public class ICalendarBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object nodeName, Map params) {
-        if (nodeName == 'calendar') handleCalendarNode(params, nodeName)
+        if (nodeName == CLOSURE_NAME_CALENDAR) handleCalendarNode(params, nodeName)
         if (nodeName == CLOSURE_NAME_EVENT) handleEventNode(params, nodeName)
-
+        if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) handleEventNode(params, nodeName)
 
         if (nodeName == CLOSURE_NAME_ORGANIZER) {
 
-            Organizer _organizer = currentEvent.getProperty(ORGANIZER)
+            Organizer organizer = currentEvent.getProperty(ORGANIZER)
 
             if (params.email) {
-                _organizer.value = "mailto:${params.email}"
+                organizer.value = "mailto:${params.email}"
             }
             if (params.name) {
-                _organizer.parameters.add new Cn(params.name)
+                organizer.parameters.add new Cn(params.name)
             }
         }
 
@@ -154,7 +157,6 @@ public class ICalendarBuilder extends BuilderSupport {
             currentEvent.properties << attendee
         }
 
-
         log.debug "createNode $nodeName, $params"
         return nodeName
     }
@@ -177,16 +179,26 @@ public class ICalendarBuilder extends BuilderSupport {
         }
         VTimeZone tz = timezone.vTimeZone
 
-        def isUtc = params?.utc ?: false
+        if (nodeName == CLOSURE_NAME_EVENT) {
 
-        final dateFormat = 'dd.MM.yyyy HH:mm'
+            def isUtc = params?.utc ?: false
+            final dateFormat = 'dd.MM.yyyy HH:mm'
 
-        def startDate = new DateTime(params.start.format(dateFormat), dateFormat, timezone)
-        def endDate = new DateTime(params.end.format(dateFormat), dateFormat, timezone)
-        startDate.setUtc(isUtc)
-        endDate.setUtc(isUtc)
+            def startDate = new DateTime(params.start.format(dateFormat), dateFormat, timezone)
+            def endDate = new DateTime(params.end.format(dateFormat), dateFormat, timezone)
 
-        currentEvent = new VEvent(startDate, endDate, params.summary)
+            startDate.setUtc(isUtc)
+            endDate.setUtc(isUtc)
+
+            currentEvent = new VEvent(startDate, endDate, params.summary)
+        }
+        else if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) {
+            currentEvent = new VEvent(new Date(params.date), params.summary)
+            currentEvent.getProperties().getProperty(DTSTART).getParameters().add(DATE)
+        }
+        else {
+            throw new UnsupportedOperationException("Unknown node name ${nodeName}")
+        }
 
         /*
        set internet address to null otherwise it takes awful lots of time to resolve a hostname or ip address
@@ -209,6 +221,7 @@ public class ICalendarBuilder extends BuilderSupport {
      * Returns the calendar as iCalendar format
      * @since 0.1
      */
+    @Override
     public String toString() {
         this.cal?.toString()
     }
@@ -230,7 +243,7 @@ public class ICalendarBuilder extends BuilderSupport {
     }
 
     /**
-     * Returns the ical4j calendar instance
+     * Returns the iCal4J calendar instance
      * @since 0.2
      */
     public Calendar getCal() {

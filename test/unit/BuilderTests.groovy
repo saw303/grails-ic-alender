@@ -17,7 +17,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
 import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 
 /*
-* Copyright 2007 the original author or authors.
+* Copyright 2007-2014 the original author or authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -104,7 +104,6 @@ class BuilderTests {
                 }
             }
         }
-        println builder.cal
         builder.cal.validate(true) // throws an exception if its invalid
 
         def events = builder.cal.getComponents(VEVENT)
@@ -148,8 +147,6 @@ class BuilderTests {
         assert event.alarms[0].trigger.duration.minutes == 5
         assert event.alarms[0].trigger.duration.seconds == 0
         assert event.getProperty(TZID).value == 'Europe/Zurich'
-
-        println builder.cal.toString()
     }
 
     @Test
@@ -170,8 +167,6 @@ class BuilderTests {
         assert 1 == events.size()
         VEvent event = events[0]
         assert event.getProperty(TZID).value == 'Europe/London'
-
-        println builder.cal.toString()
     }
 
     @Test
@@ -192,8 +187,6 @@ class BuilderTests {
         assert 1 == events.size()
         VEvent event = events[0]
         assert event.getProperty(TZID).value == 'America/Montreal'
-
-        println builder.cal.toString()
     }
 
     @Test
@@ -213,8 +206,6 @@ class BuilderTests {
         assert 1 == events.size()
         VEvent event = events[0]
         assert event.getProperty(CATEGORIES).value == 'icehockey, sports'
-
-        println builder.cal.toString()
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -256,6 +247,26 @@ class BuilderTests {
             assert attendee.getParameter('CUTYPE') == INDIVIDUAL
             assert attendee.getParameter('RSVP') != null
         }
-        println builder.cal.toString()
+    }
+
+    @Test
+    void testSupportAllDayEvents() {
+        builder.calendar {
+            events {
+                allDayEvent(date: new Date(), summary: 'Text') {
+                    organizer(name: 'Silvio', email: 'abc@ch.ch')
+                    reminder(minutesBefore: 5, description: 'Alarm 123')
+                    attendees {
+                        attendee(email: 'a@b.ch', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: TRUE)
+                        attendee(email: 'a@b.it', role: REQ_PARTICIPANT, partstat: NEEDS_ACTION, cutype: INDIVIDUAL, rsvp: FALSE)
+                    }
+                }
+            }
+        }
+
+        VEvent event = builder.cal.getComponents(VEVENT)[0]
+
+        assert event.startDate
+        assert event.endDate == event.startDate
     }
 }
