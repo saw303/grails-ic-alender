@@ -77,3 +77,30 @@ UTC is set to `false`.
 
 [ical4j]: http://wiki.modularity.net.au/ical4j/index.php?title=Main_Page
 [unittest]: https://github.com/saw303/grails-ic-alender/blob/master/test/unit/BuilderTests.groovy
+
+### All day events
+
+Version `0.4.1` introduces DSL support for all day events. You can use a String by defining a date like *12.10.2014*.
+
+
+    calendar {
+        events {
+            allDayEvent(date: '12.04.2013', summary: 'Text') {
+                organizer(name: 'Silvio', email: 'abc@ch.ch')
+                reminder(minutesBefore: 5, description: 'Alarm 123')
+            }
+        }
+    }
+
+Currently there is a limitation that the date format has to be DD.MM.YYYY. The fix of this limitation will be address in a future release.
+
+Another way is to simply provide a Date instance
+
+    calendar {
+        events {
+            allDayEvent(date: new java.util.Date(), summary: 'Text') {
+                organizer(name: 'Silvio', email: 'abc@ch.ch')
+                reminder(minutesBefore: 5, description: 'Alarm 123')
+            }
+        }
+    }
