@@ -1,3 +1,33 @@
+h3. What's new in 0.4.1?
+
+That version introduces DSL support for all day events. You can use a String by defining a date like *12.10.2014*.
+
+{code}
+calendar {
+    events {
+        allDayEvent(date: '12.04.2013', summary: 'Text') {
+            organizer(name: 'Silvio', email: 'abc@ch.ch')
+            reminder(minutesBefore: 5, description: 'Alarm 123')
+        }
+    }
+}
+{code}
+
+{note}Currently there is a limitation that the date format has to be DD.MM.YYYY. The fix of this limitation will be address in a future release.{note}
+
+Another way is to simply provide a Date instance
+
+{code}
+calendar {
+    events {
+        allDayEvent(date: new java.util.Date(), summary: 'Text') {
+            organizer(name: 'Silvio', email: 'abc@ch.ch')
+            reminder(minutesBefore: 5, description: 'Alarm 123')
+        }
+    }
+}
+{code}
+
 h3. What's new in 0.3.6?
 tbd / not yet released
 
