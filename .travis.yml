@@ -5,7 +5,7 @@ before_script:
 - chmod +x grailsw
 - chmod +x travis-build.sh
 - chmod +x doc.sh
-- echo %YOLO%
+- echo "Show me $YOLO"
 
 script: "./travis-build.sh"
 env:
