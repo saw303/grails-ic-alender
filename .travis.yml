@@ -1,11 +1,12 @@
 language: groovy
-
 jdk:
-    - openjdk6
-
+- openjdk6
 before_script:
- - chmod +x grailsw
- - chmod +x travis-build.sh
- - chmod +x doc.sh
-
-script: ./travis-build.sh
+- chmod +x grailsw
+- chmod +x travis-build.sh
+- chmod +x doc.sh
+- echo "Testing the secure stuff: %YOLO%"
+script: "./travis-build.sh"
+env:
+  global:
+    secure: UxoXSItZRtIbVlXwZyu286S1RGiCIgtBRf9gtJO3OwvsKCFABvHYFEVn+WU2WAYWtJsBz3sLvsbbpwuT/MPuo8FQea1JHqwVKB3yvUuB2DfhdBI6pslhDlSPz+muJkNIT/6QoleeE/MuaDqYz0XYwDHXOBGaMWJB9lgHwZOLk9A=
