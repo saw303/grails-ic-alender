@@ -267,12 +267,8 @@ class BuilderTests {
 
         VEvent event = builder.cal.getComponents(VEVENT)[0]
 
-        assert event.startDate.date.getAt(YEAR) == 2015
-        assert event.startDate.date.getAt(MONTH) == DECEMBER
-        assert event.startDate.date.getAt(DAY_OF_MONTH) == 18
-        assert event.endDate.date.getAt(YEAR) == 2015
-        assert event.endDate.date.getAt(MONTH) == DECEMBER
-        assert event.endDate.date.getAt(DAY_OF_MONTH) == 18
+        assert event.startDate.toString().contains('20151218')
+        assert event.endDate.toString().contains('20151218')
     }
 
     @Test
@@ -292,11 +288,7 @@ class BuilderTests {
 
         VEvent event = builder.cal.getComponents(VEVENT)[0]
 
-        assert event.startDate.date.getAt(YEAR) == 2013
-        assert event.startDate.date.getAt(MONTH) == APRIL
-        assert event.startDate.date.getAt(DAY_OF_MONTH) == 12
-        assert event.endDate.date.getAt(YEAR) == 2013
-        assert event.endDate.date.getAt(MONTH) == APRIL
-        assert event.endDate.date.getAt(DAY_OF_MONTH) == 12
+        assert event.startDate.toString().contains('20130412')
+        assert event.endDate.toString().contains('20130412')
     }
 }
