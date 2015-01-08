@@ -18,6 +18,8 @@ import static net.fortuna.ical4j.model.parameter.PartStat.NEEDS_ACTION
 import static net.fortuna.ical4j.model.parameter.Role.REQ_PARTICIPANT
 import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
 import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
+import static net.fortuna.ical4j.model.property.Method.CANCEL
+import static net.fortuna.ical4j.model.property.Method.PUBLISH
 
 /*
 * Copyright 2007-2014 the original author or authors.
@@ -72,8 +74,11 @@ class BuilderTests {
         }
         builder.cal.validate(true)
 
+        builder.cal.getProperty(METHOD) == PUBLISH
+
         final VEvent event = builder.cal.getComponents(VEVENT)[0]
         assert event.getProperty(ORGANIZER) != null
+        assert event.getProperty(METHOD) == PUBLISH
         assert !event.startDate.isUtc()
         assert !event.endDate.isUtc()
         assert event.startDate.timeZone == timeZone
@@ -120,6 +125,22 @@ class BuilderTests {
         assert event.endDate.isUtc()
         assert !event.startDate.timeZone
         assert !event.endDate.timeZone
+    }
+
+    @Test
+    void testEventMethod() {
+
+        builder.calendar {
+            events {
+                event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1', method: 'CANCEL', uid: '123')
+            }
+        }
+        builder.cal.validate(true)
+
+        assert builder.cal.getProperty(METHOD) == PUBLISH
+        final VEvent event = builder.cal.getComponents(VEVENT)[0]
+        assert event.getProperty(ORGANIZER) != null
+        assert event.getProperty(METHOD) == CANCEL
     }
 
     @Test

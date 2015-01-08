@@ -11,6 +11,9 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import static net.fortuna.ical4j.model.Property.ORGANIZER
+import static net.fortuna.ical4j.model.property.CalScale.GREGORIAN
+import static net.fortuna.ical4j.model.property.Method.PUBLISH
+import static net.fortuna.ical4j.model.property.Version.VERSION_2_0
 import static net.fortuna.ical4j.util.Dates.PRECISION_DAY
 
 /*
@@ -135,7 +138,7 @@ public class ICalendarBuilder extends BuilderSupport {
             currentEvent.alarms << alarm
         }
 
-        if (nodeName == 'attendee') {
+        if (nodeName == CLOSURE_NAME_ATTENDEE) {
             def attendee = new Attendee(URI.create("mailto:${params.email}"))
 
             if (params.role && params.role instanceof Role) {
@@ -163,9 +166,9 @@ public class ICalendarBuilder extends BuilderSupport {
     private void handleCalendarNode(Map params) {
         this.cal = new Calendar()
         this.cal.properties << new ProdId(params.prodid ?: '-//Grails iCalendar plugin//NONSGML Grails iCalendar plugin//EN')
-        this.cal.properties << Version.VERSION_2_0
-        this.cal.properties << CalScale.GREGORIAN
-        this.cal.properties << Method.PUBLISH
+        this.cal.properties << VERSION_2_0
+        this.cal.properties << GREGORIAN
+        this.cal.properties << PUBLISH
     }
 
     private void handleEventNode(Map params, nodeName) {
@@ -228,6 +231,13 @@ public class ICalendarBuilder extends BuilderSupport {
         if (params.classification) currentEvent.properties << getClazz(params.classification)
         if (params.categories) currentEvent.properties << new Categories(params.categories)
         currentEvent.properties << new Organizer()
+
+        def method = PUBLISH
+
+        if (params.method) {
+            method = new Method(params.method)
+        }
+        currentEvent.properties << method
         this.cal.components << currentEvent
     }
 
