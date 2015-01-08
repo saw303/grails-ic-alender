@@ -111,7 +111,7 @@ public class ICalendarBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object nodeName, Map params) {
-        if (nodeName == CLOSURE_NAME_CALENDAR) handleCalendarNode(params, nodeName)
+        if (nodeName == CLOSURE_NAME_CALENDAR) handleCalendarNode(params)
         if (nodeName == CLOSURE_NAME_EVENT) handleEventNode(params, nodeName)
         if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) handleEventNode(params, nodeName)
 
@@ -160,7 +160,7 @@ public class ICalendarBuilder extends BuilderSupport {
         return nodeName
     }
 
-    private void handleCalendarNode(Map params, nodeName) {
+    private void handleCalendarNode(Map params) {
         this.cal = new Calendar()
         this.cal.properties << new ProdId(params.prodid ?: '-//Grails iCalendar plugin//NONSGML Grails iCalendar plugin//EN')
         this.cal.properties << Version.VERSION_2_0
@@ -170,8 +170,11 @@ public class ICalendarBuilder extends BuilderSupport {
 
     private void handleEventNode(Map params, nodeName) {
 
+        def isUtc = params?.utc ?: false
+
         TimeZoneRegistry registry = TimeZoneRegistryFactory.instance.createRegistry()
         TimeZone timezone = params.timezone ? registry.getTimeZone(params.timezone) : registry.getTimeZone('Europe/Zurich')
+
         if (!timezone) {
             log.debug("Time zone ${params.timezone} is not known by iCal4j")
             throw new IllegalArgumentException("Unknown time zone ${params.timezone}")
@@ -180,33 +183,34 @@ public class ICalendarBuilder extends BuilderSupport {
 
         if (nodeName == CLOSURE_NAME_EVENT) {
 
-            def isUtc = params?.utc ?: false
             final dateFormat = 'dd.MM.yyyy HH:mm'
 
-            def startDate = new DateTime(params.start.format(dateFormat), dateFormat, timezone)
-            def endDate = new DateTime(params.end.format(dateFormat), dateFormat, timezone)
+            def startDate
+            def endDate
 
-            startDate.setUtc(isUtc)
-            endDate.setUtc(isUtc)
-
+            if (isUtc) {
+                startDate = new DateTime(params.start.format(dateFormat), dateFormat, isUtc)
+                endDate = new DateTime(params.end.format(dateFormat), dateFormat, isUtc)
+            } else {
+                startDate = new DateTime(params.start.format(dateFormat), dateFormat, timezone)
+                endDate = new DateTime(params.end.format(dateFormat), dateFormat, timezone)
+                startDate.setTimeZone(timezone)
+                endDate.setTimeZone(timezone)
+            }
             currentEvent = new VEvent(startDate, endDate, params.summary)
-        }
-        else if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) {
+        } else if (nodeName == CLOSURE_NAME_ALL_DAY_EVENT) {
 
             def date
             if (params.date instanceof java.util.Date) {
                 date = new Date(params.date.time, PRECISION_DAY, timezone)
-            }
-            else if (params.date instanceof String) {
+            } else if (params.date instanceof String) {
                 def final javaDate = java.util.Date.parse('dd.MM.yyyy', params.date)
                 date = new Date(javaDate.time, PRECISION_DAY, timezone)
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown param type ${params.date?.class?.name} for attribute date")
             }
             currentEvent = new VEvent(date, params.summary)
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown node name ${nodeName}")
         }
 
@@ -214,7 +218,11 @@ public class ICalendarBuilder extends BuilderSupport {
        set internet address to null otherwise it takes awful lots of time to resolve a hostname or ip address
         */
         currentEvent.properties << new UidGenerator(null, 'iCalPlugin-Grails').generateUid()
-        currentEvent.properties << tz.timeZoneId
+
+        if (!isUtc) {
+            currentEvent.properties << tz.timeZoneId
+        }
+
         if (params.location) currentEvent.properties << new Location(params.location)
         if (params.description) currentEvent.properties << new Description(params.description)
         if (params.classification) currentEvent.properties << getClazz(params.classification)

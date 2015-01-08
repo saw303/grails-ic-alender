@@ -1,6 +1,9 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import net.fortuna.ical4j.model.TimeZone
+import net.fortuna.ical4j.model.TimeZoneRegistry
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
 import org.junit.After
@@ -40,6 +43,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 class BuilderTests {
 
     private ICalendarBuilder builder
+    private TimeZoneRegistry registry = TimeZoneRegistryFactory.instance.createRegistry()
 
     @Before
     void setUp() {
@@ -59,6 +63,9 @@ class BuilderTests {
 
     @Test
     void testWithOutExplicitOrganizerDeclaration() {
+
+        TimeZone timeZone = registry.getTimeZone("Europe/Zurich")
+
         builder.calendar {
             events {
                 event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1')
@@ -70,6 +77,8 @@ class BuilderTests {
         assert event.getProperty(ORGANIZER) != null
         assert !event.startDate.isUtc()
         assert !event.endDate.isUtc()
+        assert event.startDate.timeZone == timeZone
+        assert event.endDate.timeZone == timeZone
     }
 
     @Test
@@ -84,9 +93,11 @@ class BuilderTests {
 
         final VEvent event = builder.cal.getComponents(VEVENT)[0]
         assert event.getProperty(ORGANIZER) != null
+        assert !event.getProperty(TZID)
         assert event.startDate.isUtc()
         assert event.endDate.isUtc()
-
+        assert !event.startDate.timeZone
+        assert !event.endDate.timeZone
     }
 
     @Test
@@ -152,6 +163,7 @@ class BuilderTests {
 
     @Test
     void testSetDifferentTimeZoneLondon() {
+        TimeZone timeZone = registry.getTimeZone('Europe/London')
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'Europe/London') {
@@ -168,6 +180,8 @@ class BuilderTests {
         assert 1 == events.size()
         VEvent event = events[0]
         assert event.getProperty(TZID).value == 'Europe/London'
+        assert event.startDate.timeZone == timeZone
+        assert event.endDate.timeZone == timeZone
     }
 
     @Test
