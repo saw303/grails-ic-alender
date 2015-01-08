@@ -22,7 +22,7 @@ grails.project.dependency.resolution = {
         mavenCentral()
     }
     dependencies {
-        compile 'org.mnode.ical4j:ical4j:1.0.5.2'
+        compile 'org.mnode.ical4j:ical4j:1.0.6'
     }
 
     plugins {
