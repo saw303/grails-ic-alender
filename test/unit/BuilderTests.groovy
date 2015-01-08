@@ -10,7 +10,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import static java.util.Calendar.*
 import static net.fortuna.ical4j.model.Component.VEVENT
 import static net.fortuna.ical4j.model.Parameter.CN
 import static net.fortuna.ical4j.model.Property.*
@@ -79,6 +78,29 @@ class BuilderTests {
         assert !event.endDate.isUtc()
         assert event.startDate.timeZone == timeZone
         assert event.endDate.timeZone == timeZone
+        assert event.uid
+    }
+
+    @Test
+    void testEventWithCustomUid() {
+
+        TimeZone timeZone = registry.getTimeZone("Europe/Zurich")
+        def uid = UUID.randomUUID().toString()
+
+        builder.calendar {
+            events {
+                event(start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1', uid: uid)
+            }
+        }
+        builder.cal.validate(true)
+
+        final VEvent event = builder.cal.getComponents(VEVENT)[0]
+        assert event.getProperty(ORGANIZER) != null
+        assert !event.startDate.isUtc()
+        assert !event.endDate.isUtc()
+        assert event.startDate.timeZone == timeZone
+        assert event.endDate.timeZone == timeZone
+        assert event.uid.value == uid
     }
 
     @Test
