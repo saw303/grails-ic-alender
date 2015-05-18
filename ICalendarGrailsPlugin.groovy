@@ -1,6 +1,7 @@
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-
-import static org.codehaus.groovy.grails.commons.ControllerArtefactHandler.TYPE
+import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
 /*
  * Copyright 2007 the original author or authors.
@@ -34,7 +35,8 @@ class ICalendarGrailsPlugin {
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             'grails-app/views/error.gsp',
-            'grails-app/controllers/TestController.groovy'
+            'grails-app/controllers/TestController.groovy',
+            'grails-app/controllers/ExcludedTestController.groovy'
     ]
 
     def author = "Silvio Wangler"
@@ -65,37 +67,20 @@ class ICalendarGrailsPlugin {
     // Online location of the plugin's browseable source code.
     def scm = [url: "https://github.com/saw303/grails-ic-alender"]
 
-    def doWithSpring = {
-        // do nothing yet
-    }
-
-    def doWithApplicationContext = { applicationContext ->
-        // Implement post initialization spring config (optional)
-    }
-
-    def doWithWebDescriptor = { xml ->
-        // Implement additions to web.xml (optional)
-    }
-
     def doWithDynamicMethods = { ctx ->
 
         // hooking into render method
         application.controllerClasses.each() { controllerClass ->
-            replaceRenderMethod(controllerClass)
+            replaceRenderMethod(controllerClass, application)
         }
     }
 
     def onChange = { event ->
 
         // only process controller classes
-        if (application.isArtefactOfType(TYPE, event.source)) {
-            def clazz = application.getControllerClass(event.source?.name)
-            replaceRenderMethod(clazz)
+        if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
+            replaceRenderMethod(application.getControllerClass(event.source?.name), application)
         }
-    }
-
-    def onConfigChange = { event ->
-        // The event is the same as for 'onChange'.
     }
 
     /**
@@ -103,7 +88,10 @@ class ICalendarGrailsPlugin {
      * of a Grails controller class and adds an alternative behaviour for the mime type
      * 'text/calendar' used by the iCalendar plugin.
      */
-    private void replaceRenderMethod(controllerClass) {
+    private void replaceRenderMethod(controllerClass, application) {
+        if(controllerClass.logicalPropertyName in getExcludedControllerNames(application)){
+            return
+        }
 
         log.info("Modifying render method on controller '${controllerClass.name}'")
 
@@ -133,4 +121,10 @@ class ICalendarGrailsPlugin {
             }
         }
     }
+
+
+    private static getExcludedControllerNames(def application) {
+        application.config.grails.plugins.ical.controllers.exclude
+    }
+
 }
