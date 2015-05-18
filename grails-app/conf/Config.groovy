@@ -7,7 +7,7 @@ log4j = {
         console name: 'stdout', layout: pattern(conversionPattern: '%d [%t] %-5p %c - %m%n')
     }
 
-    debug 'ch.silviowangler.groovy.util.builder.ICalendarBuilder', 'groovy.util'
+    debug 'ch.silviowangler.groovy.util.builder.ICalendarBuilder', 'groovy.util', 'ICalendarGrailsPlugin'
 }
 grails.views.default.codec = "none" // none, html, base64
 grails.views.gsp.encoding = "UTF-8"

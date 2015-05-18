@@ -21,6 +21,7 @@ import static org.codehaus.groovy.grails.commons.ControllerArtefactHandler.TYPE
 /**
  * @author Silvio Wangler (silvio.wangler@gmail.com)
  */
+@Log4j
 class ICalendarGrailsPlugin {
     def version = "0.4.4" // added by set-version
 
@@ -104,7 +105,7 @@ class ICalendarGrailsPlugin {
      */
     private void replaceRenderMethod(controllerClass) {
 
-        println "Modifying render method on controller '${controllerClass.name}'"
+        log.info("Modifying render method on controller '${controllerClass.name}'")
 
         def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
 
