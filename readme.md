@@ -46,6 +46,8 @@ If you do not want to have this feature injected into every controller you can s
 
     grails.plugins.ical.controllers.exclude = ['excludedTest']
 
+This Configuration parameter has to be a list of controller names!
+
 ### Invite attendees
 
     render(contentType: 'text/calendar') {
