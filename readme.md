@@ -39,6 +39,13 @@ This documentation does not claim to cover all the features that are implemented
 But there is a [Unit Test Suite][unittest] that covers the feature set of this plugin and therefore a very good entry point if you
 are looking for an overview.
 
+
+### Disable the plugin per controller
+
+If you do not want to have this feature injected into every controller you can specify which controllers to be excluded in Config.groovy
+
+    grails.plugins.ical.controllers.exclude = ['excludedTest']
+
 ### Invite attendees
 
     render(contentType: 'text/calendar') {
