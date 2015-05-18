@@ -231,7 +231,7 @@ class BuilderTests {
     void testSetDifferentTimeZoneMontreal() {
         builder.calendar {
             events {
-                event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'America/Montreal') {
+                event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'America/Toronto') {
                     organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                 }
@@ -244,7 +244,9 @@ class BuilderTests {
 
         assert 1 == events.size()
         VEvent event = events[0]
-        assert event.getProperty(TZID).value == 'America/Montreal'
+        assert !event.startDate.isUtc()
+        assert !event.endDate.isUtc()
+        assert event.getProperty(TZID).value == 'America/Toronto'
     }
 
     @Test
