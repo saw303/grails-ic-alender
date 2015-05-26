@@ -29,7 +29,7 @@
       }
     }
 
-This plugin uses the [ical4j][ical4j] API and is therefore iCal RFC compliant. The output has been tested against the Google calendar importer, Microsoft Outlook and Mozilla Sunbird.
+This plugin uses the [ical4j][ical4j] API and is therefore [iCalendar RFC](https://tools.ietf.org/html/rfc5545) compliant. The output has been tested against the Google Calendar importer, Microsoft Outlook and Mozilla Sunbird.
 
 The plugin is at the current stage of development limited to events only. That means that you currently can only export `VEVENTS`.
 
