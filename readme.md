@@ -1,6 +1,23 @@
 # Grails iCalendar Plugin
 [![Build Status](https://travis-ci.org/saw303/grails-ic-alender.svg?branch=master)](https://travis-ci.org/saw303/grails-ic-alender)
 
+## Grails Version Support
+### Grails 2.x Support
+Use version 0.4.4 in Grails 2.x projects by adding it as a plugin dependency in BuildConfig.groovy:
+
+    plugins {
+        ...
+        compile ":ic-alendar:0.4.4"
+    }
+    
+### Grails 3.x
+Use version 0.5.0 or above for Grails 3.x projects by adding it as a dependency in build.gradle:
+
+    dependencies {
+        ...
+        compile "org.grails.plugins:grails-ic-alendar:0.5.0-SNAPSHOT"
+    }
+
 ## Introduction
 
     class TestController {

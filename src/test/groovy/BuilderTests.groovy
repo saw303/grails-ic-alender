@@ -7,6 +7,7 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -20,7 +21,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
 import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 import static net.fortuna.ical4j.model.property.Method.CANCEL
 import static net.fortuna.ical4j.model.property.Method.PUBLISH
-
+import static org.junit.Assert.*;
 /*
 * Copyright 2007-2014 the original author or authors.
 *

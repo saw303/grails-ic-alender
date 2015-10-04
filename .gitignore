@@ -17,3 +17,10 @@ out
 .idea
 *.zip
 plugin.xml
+Thumbs.db
+.DS_Store
+.gradle
+build/
+*.ipr
+*.iws
+.settings

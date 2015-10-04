@@ -1,37 +1,16 @@
+package grails.ic.alendar
+
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
-import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsControllerClass
+import grails.plugins.*
+import org.grails.core.artefact.ControllerArtefactHandler
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-/*
- * Copyright 2007 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @author Silvio Wangler (silvio.wangler@gmail.com)
- */
-@Log4j
-class ICalendarGrailsPlugin {
-    def version = "0.4.4" // added by set-version
+class ICalendarGrailsPlugin extends Plugin {
+    private static final Logger log = LoggerFactory.getLogger(getClass())
 
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = '2.0.0 > *'
-    // the other plugins this plugin depends on
-    def dependsOn = [controllers: '2.0.0 > *']
-    def loadAfter = ['controllers']
-    def observe = ['controllers']
+    def grailsVersion = "3.0.0 > *"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             'grails-app/views/error.gsp',
@@ -47,6 +26,15 @@ class ICalendarGrailsPlugin {
         The plugin hooks replaces each render method that uses the contentType 'text/calendar'.
 	'''
 
+
+    def dependsOn = [controllers: '3.0.0 > *']
+    def loadAfter = ['controllers']
+    def observe = ['controllers']
+    // resources that are excluded from plugin packaging
+
+
+    def profiles = ['web']
+
     // URL to the plugin's documentation
     def documentation = 'http://github.com/saw303/grails-ic-alender'
 
@@ -55,7 +43,6 @@ class ICalendarGrailsPlugin {
     // License: one of 'APACHE', 'GPL2', 'GPL3'
     def license = "APACHE"
 
-    // Details of company behind the plugin (if there is one)
     def organization = [name: "Silvio Wangler Software Development", url: "http://www.silviowangler.ch/"]
 
     // Any additional developers beyond the author specified above.
@@ -65,29 +52,39 @@ class ICalendarGrailsPlugin {
     def issueManagement = [system: "Github", url: "https://github.com/saw303/grails-ic-alender/issues"]
 
     // Online location of the plugin's browseable source code.
-    def scm = [url: "https://github.com/saw303/grails-ic-alender"]
+//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
-    def doWithDynamicMethods = { ctx ->
-
-        // hooking into render method
-        application.controllerClasses.each() { controllerClass ->
-            replaceRenderMethod(controllerClass, application)
+    Closure doWithSpring() { {->
         }
     }
 
-    def onChange = { event ->
+    void doWithDynamicMethods() {
+        // hooking into render method
+        for (controllerClass in grailsApplication.controllerClasses) {
+            replaceRenderMethod(controllerClass, grailsApplication)
+        }
+    }
+
+    void doWithApplicationContext() {
+    }
+
+    void onChange(Map<String, Object> event) {
+        // watching is modified and reloaded. The event contains: event.source,
+        // event.application, event.manager, event.ctx, and event.plugin.
 
         // only process controller classes
-        if (application.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
-            replaceRenderMethod(application.getControllerClass(event.source?.name), application)
+        if (grailsApplication.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
+            replaceRenderMethod(grailsApplication.getControllerClass(event.source?.name), grailsApplication)
         }
     }
 
-    /**
-     * This implementation is based on Marc Palmers feeds plugin. It hooks into the render method
-     * of a Grails controller class and adds an alternative behaviour for the mime type
-     * 'text/calendar' used by the iCalendar plugin.
-     */
+    void onConfigChange(Map<String, Object> event) {
+        // The event is the same as for 'onChange'.
+    }
+
+    void onShutdown(Map<String, Object> event) {
+    }
+
     private void replaceRenderMethod(controllerClass, application) {
         if(controllerClass.logicalPropertyName in getExcludedControllerNames(application)){
             return
@@ -122,9 +119,7 @@ class ICalendarGrailsPlugin {
         }
     }
 
-
     private static getExcludedControllerNames(def application) {
         application.config.grails.plugins.ical.controllers.exclude
     }
-
 }
