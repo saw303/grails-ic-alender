@@ -1,7 +1,6 @@
 package ch.silviowangler.grails.icalender
 
-import ch.silviowangler.grails.icalender.ICalendarBuilder
-import grails.plugins.*
+import grails.plugins.Plugin
 import org.grails.core.artefact.ControllerArtefactHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,8 +29,6 @@ class ICalendarGrailsPlugin extends Plugin {
     def dependsOn = [controllers: '3.0.0 > *']
     def loadAfter = ['controllers']
     def observe = ['controllers']
-    // resources that are excluded from plugin packaging
-
 
     def profiles = ['web']
 
@@ -51,21 +48,12 @@ class ICalendarGrailsPlugin extends Plugin {
     // Location of the plugin's issue tracker.
     def issueManagement = [system: "Github", url: "https://github.com/saw303/grails-ic-alender/issues"]
 
-    // Online location of the plugin's browseable source code.
-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
-
-    Closure doWithSpring() { {->
-        }
-    }
 
     void doWithDynamicMethods() {
         // hooking into render method
         for (controllerClass in grailsApplication.controllerClasses) {
             replaceRenderMethod(controllerClass, grailsApplication)
         }
-    }
-
-    void doWithApplicationContext() {
     }
 
     void onChange(Map<String, Object> event) {
@@ -76,13 +64,6 @@ class ICalendarGrailsPlugin extends Plugin {
         if (grailsApplication.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
             replaceRenderMethod(grailsApplication.getControllerClass(event.source?.name), grailsApplication)
         }
-    }
-
-    void onConfigChange(Map<String, Object> event) {
-        // The event is the same as for 'onChange'.
-    }
-
-    void onShutdown(Map<String, Object> event) {
     }
 
     private void replaceRenderMethod(controllerClass, application) {

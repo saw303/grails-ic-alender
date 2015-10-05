@@ -1,6 +1,5 @@
 package ch.silviowangler.grails.icalender
 
-import ch.silviowangler.grails.icalender.ICalendarBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import net.fortuna.ical4j.model.TimeZone
@@ -22,7 +21,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
 import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 import static net.fortuna.ical4j.model.property.Method.CANCEL
 import static net.fortuna.ical4j.model.property.Method.PUBLISH
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 /*
 * Copyright 2007-2014 the original author or authors.
 *
