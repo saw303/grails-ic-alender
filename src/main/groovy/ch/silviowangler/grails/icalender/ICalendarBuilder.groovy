@@ -1,4 +1,4 @@
-package ch.silviowangler.groovy.util.builder
+package ch.silviowangler.grails.icalender
 
 import net.fortuna.ical4j.model.*
 import net.fortuna.ical4j.model.component.VAlarm

@@ -2,7 +2,7 @@
 grails:
     profile: web-plugin
     codegen:
-        defaultPackage: grails.plugins.ic.alendar
+        defaultPackage: ch.silviowangler.grails.icalender
 info:
     app:
         name: '@info.app.name@'

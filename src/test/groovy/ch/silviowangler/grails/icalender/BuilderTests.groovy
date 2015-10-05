@@ -1,4 +1,6 @@
-import ch.silviowangler.groovy.util.builder.ICalendarBuilder
+package ch.silviowangler.grails.icalender
+
+import ch.silviowangler.grails.icalender.ICalendarBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import net.fortuna.ical4j.model.TimeZone
@@ -7,7 +9,6 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 

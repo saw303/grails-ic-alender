@@ -1,6 +1,6 @@
-package grails.plugins.ic.alendar
+package ch.silviowangler.grails.icalender
 
-import ch.silviowangler.groovy.util.builder.ICalendarBuilder
+import ch.silviowangler.grails.icalender.ICalendarBuilder
 import grails.plugins.*
 import org.grails.core.artefact.ControllerArtefactHandler
 import org.slf4j.Logger
