@@ -15,7 +15,7 @@ Use version 0.5.0 or above for Grails 3.x projects by adding it as a dependency 
 
     dependencies {
         ...
-        compile "org.grails.plugins:grails-ic-alendar:0.5.0-SNAPSHOT"
+        compile "org.grails.plugins:ic-alendar:0.5.0-SNAPSHOT"
     }
 
 ## Introduction

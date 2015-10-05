@@ -1,4 +1,4 @@
-package grails.ic.alendar
+package grails.plugins.ic.alendar
 
 import ch.silviowangler.groovy.util.builder.ICalendarBuilder
 import grails.plugins.*

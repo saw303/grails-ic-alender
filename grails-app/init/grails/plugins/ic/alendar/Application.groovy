@@ -1,4 +1,4 @@
-package grails.ic.alendar
+package grails.plugins.ic.alendar
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
