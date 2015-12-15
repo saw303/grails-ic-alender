@@ -104,3 +104,17 @@ Another way is to simply provide a Date instance
             }
         }
     }
+
+### Adding X-Properties to a calendar
+
+For some calendar clients such as Microsoft Outlook it can be useful to set vendor specific properties such as [`X-PRIMARY-CALENDAR`](https://msdn.microsoft.com/en-us/library/ee219226(v=exchg.80).aspx).
+Since `version 0.4.5` (for Grails 2.x) and `version 0.5.1` (for Grails 3.x) you can set custom properties like this.
+
+    calendar(xproperties: ['X-WR-RELCALID': '1234', 'X-PRIMARY-CALENDAR': 'TRUE']) {
+        events {
+            allDayEvent(date: new java.util.Date(), summary: 'Text') {
+                organizer(name: 'Silvio', email: 'abc@ch.ch')
+                reminder(minutesBefore: 5, description: 'Alarm 123')
+            }
+        }
+    }

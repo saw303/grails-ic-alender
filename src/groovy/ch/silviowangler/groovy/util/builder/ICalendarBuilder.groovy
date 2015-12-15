@@ -10,6 +10,8 @@ import net.fortuna.ical4j.util.UidGenerator
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+import java.text.ParseException
+
 import static net.fortuna.ical4j.model.Property.ORGANIZER
 import static net.fortuna.ical4j.model.property.CalScale.GREGORIAN
 import static net.fortuna.ical4j.model.property.Method.PUBLISH
@@ -169,6 +171,12 @@ public class ICalendarBuilder extends BuilderSupport {
         this.cal.properties << VERSION_2_0
         this.cal.properties << GREGORIAN
         this.cal.properties << PUBLISH
+
+        if (params.xproperties && params.xproperties instanceof Map && !params.xproperties.isEmpty()) {
+            for (String key in params.xproperties.keySet()) {
+                this.cal.properties.add(new CustomProperty(key, params.xproperties[key] as String))
+            }
+        }
     }
 
     private void handleEventNode(Map params, nodeName) {

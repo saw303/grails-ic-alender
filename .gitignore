@@ -17,3 +17,6 @@ out
 .idea
 *.zip
 plugin.xml
+
+.gradle
+build
