@@ -229,7 +229,7 @@ class BuilderTests {
     }
 
     @Test
-    void testSetDifferentTimeZoneMontreal() {
+    void testSetDifferentTimeZoneToronto() {
         builder.calendar {
             events {
                 event(start: new Date(), end: (new Date()).next(), summary: 'Text', timezone: 'America/Toronto') {
@@ -350,5 +350,16 @@ class BuilderTests {
 
         assert event.startDate.toString().contains('20130412')
         assert event.endDate.toString().contains('20130412')
+    }
+
+    @Test
+    void addXPropertiesToTheCalendar() {
+
+        builder.calendar(xproperties: ['X-WR-RELCALID': '1234', 'X-PRIMARY-CALENDAR': 'TRUE'])
+
+        assert builder.cal.properties.size() == 6
+
+        assert builder.cal.properties.getProperty('X-WR-RELCALID').value == '1234'
+        assert builder.cal.properties.getProperty('X-PRIMARY-CALENDAR').value == 'TRUE'
     }
 }

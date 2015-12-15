@@ -169,6 +169,12 @@ public class ICalendarBuilder extends BuilderSupport {
         this.cal.properties << VERSION_2_0
         this.cal.properties << GREGORIAN
         this.cal.properties << PUBLISH
+
+        if (params.xproperties && params.xproperties instanceof Map && !params.xproperties.isEmpty()) {
+            for (String key in params.xproperties.keySet()) {
+                this.cal.properties.add(new CustomProperty(key, params.xproperties[key] as String))
+            }
+        }
     }
 
     private void handleEventNode(Map params, nodeName) {
