@@ -352,11 +352,20 @@ class BuilderTests {
     @Test
     void addXPropertiesToTheCalendar() {
 
-        builder.calendar(xproperties: ['X-WR-RELCALID': '1234', 'X-PRIMARY-CALENDAR': 'TRUE'])
+        builder.calendar(xproperties: ['X-WR-RELCALID': '1234', 'X-PRIMARY-CALENDAR': 'TRUE']) {
+            events {
+                event start: new Date() - 2, end: new Date() - 1, description: 'Hi all', summary: 'Short info1'
+                event start: new Date() + 1, end: new Date() + 2, description: 'Hi all', summary: 'Short info1'
+            }
+        }
 
         assert builder.cal.properties.size() == 6
 
         assert builder.cal.properties.getProperty('X-WR-RELCALID').value == '1234'
         assert builder.cal.properties.getProperty('X-PRIMARY-CALENDAR').value == 'TRUE'
+
+        assert builder.cal.getComponents(VEVENT).size() == 2
+
+        println builder.cal.toString()
     }
 }
