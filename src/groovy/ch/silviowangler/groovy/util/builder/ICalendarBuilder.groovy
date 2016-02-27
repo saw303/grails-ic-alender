@@ -55,6 +55,7 @@ public class ICalendarBuilder extends BuilderSupport {
     private static final Log log = LogFactory.getLog(this)
     private Calendar cal
     private VEvent currentEvent
+    private UidGenerator uidGenerator
 
     /**
      * Declares a parent/child relations
@@ -74,6 +75,7 @@ public class ICalendarBuilder extends BuilderSupport {
     public ICalendarBuilder() {
         super();
         reset()
+        uidGenerator = new UidGenerator('iCalPlugin-Grails')
     }
 
     /**
@@ -227,7 +229,7 @@ public class ICalendarBuilder extends BuilderSupport {
         if (params?.uid?.length() > 0) {
             currentEvent.properties << new Uid(params.uid)
         } else {
-            currentEvent.properties << new UidGenerator('iCalPlugin-Grails').generateUid()
+            currentEvent.properties << uidGenerator.generateUid()
         }
 
         if (!isUtc) {
