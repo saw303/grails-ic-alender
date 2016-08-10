@@ -13,8 +13,7 @@ class ICalendarGrailsPlugin extends Plugin {
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             'grails-app/views/error.gsp',
-            'grails-app/controllers/TestController.groovy',
-            'grails-app/controllers/ExcludedTestController.groovy'
+            'grails-app/controllers/TestController.groovy'
     ]
 
     def author = "Silvio Wangler"
@@ -48,59 +47,4 @@ class ICalendarGrailsPlugin extends Plugin {
     // Location of the plugin's issue tracker.
     def issueManagement = [system: "Github", url: "https://github.com/saw303/grails-ic-alender/issues"]
 
-
-    void doWithDynamicMethods() {
-        // hooking into render method
-        for (controllerClass in grailsApplication.controllerClasses) {
-            replaceRenderMethod(controllerClass, grailsApplication)
-        }
-    }
-
-    void onChange(Map<String, Object> event) {
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
-
-        // only process controller classes
-        if (grailsApplication.isArtefactOfType(ControllerArtefactHandler.TYPE, event.source)) {
-            replaceRenderMethod(grailsApplication.getControllerClass(event.source?.name), grailsApplication)
-        }
-    }
-
-    private void replaceRenderMethod(controllerClass, application) {
-        if(controllerClass.logicalPropertyName in getExcludedControllerNames(application)){
-            return
-        }
-
-        log.info("Modifying render method on controller '${controllerClass.name}'")
-
-        def oldRender = controllerClass.metaClass.pickMethod("render", [Map, Closure] as Class[])
-
-        controllerClass.metaClass.render = { Map params, Closure closure ->
-
-            final String MIME_TYPE_TEXT_CALENDAR = 'text/calendar'
-
-            if (MIME_TYPE_TEXT_CALENDAR.equalsIgnoreCase(params.contentType)) {
-
-                def builder = new ICalendarBuilder()
-                builder.invokeMethod('translate', closure)
-
-                if (params.filename) {
-                    response.setHeader 'Content-Disposition', "inline; filename=\"${params.filename}\""
-                }
-
-                response.contentType = MIME_TYPE_TEXT_CALENDAR
-                response.characterEncoding = params.characterEncoding ?: 'UTF-8'
-                response.outputStream << builder.toString()
-                response.outputStream.flush()
-
-            } else {
-                // Defer to original render method
-                oldRender.invoke(delegate, [params, closure] as Object[])
-            }
-        }
-    }
-
-    private static getExcludedControllerNames(def application) {
-        application.config.grails.plugins.ical.controllers.exclude
-    }
 }

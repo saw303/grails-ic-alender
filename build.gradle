@@ -16,12 +16,10 @@ plugins {
     id "com.jfrog.bintray" version "1.6"
 }
 
-version "0.5.2"
+version "0.6.0"
 group "org.grails.plugins"
 
 apply plugin: 'maven-publish'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: "spring-boot"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-gsp"
@@ -64,7 +62,7 @@ dependencies {
 
     console "org.grails:grails-console"
 
-    compile 'org.mnode.ical4j:ical4j:1.0.6'
+    compile 'org.mnode.ical4j:ical4j:1.0.7'
 }
 
 task wrapper(type: Wrapper) {

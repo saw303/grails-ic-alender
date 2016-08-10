@@ -1,3 +1,5 @@
+import ch.silviowangler.grails.icalender.CalendarExporter
+
 /*
  * Copyright 2007 the original author or authors.
  *
@@ -14,11 +16,11 @@
  * limitations under the License.
  */
 
-class TestController {
+class TestController implements CalendarExporter {
 
   def index = {
 
-    render(contentType: 'text/calendar', filename: 'testfilename.ics') {
+    renderCalendar {
       calendar {
         events {
           event(start: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 15:00'), description: 'Events description', summary: 'Short info1') {
