@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/saw303/grails-ic-alender.svg?branch=master)](https://travis-ci.org/saw303/grails-ic-alender)
 
 ## Grails Version Support
-### Grails 2.x Support
+### Grails 2.x
 Use version 0.4.4 in Grails 2.x projects by adding it as a plugin dependency in `BuildConfig.groovy`.
 
     plugins {
@@ -15,10 +15,12 @@ Use version 0.5.0 or above for Grails 3.x projects by adding it as a dependency 
 
     dependencies {
         ...
-        compile "org.grails.plugins:iCalendar:0.5.1"
+        compile "org.grails.plugins:iCalendar:0.6.0"
     }
 
 ## Introduction
+
+_This listing is only valid until plugin version 0.5.x_
 
     class TestController {
       def index = {
@@ -45,6 +47,28 @@ Use version 0.5.0 or above for Grails 3.x projects by adding it as a dependency 
         }
       }
     }
+
+The Grails 3 version of the plugin starting from version `0.6.0` uses Groovy Traits to inject a render method into your controller.
+
+````
+// Since version 0.6.0
+class TestController implements CalendarExporter {
+
+  def index = {
+
+    renderCalendar {
+      calendar {
+        events {
+          event(start: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '31.10.2009 15:00'), description: 'Events description', summary: 'Short info1') {
+            organizer(name: 'Silvio Wangler', email: 'silvio.wangler@gmail.com')
+          }
+          event(start: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 14:00'), end: Date.parse('dd.MM.yyyy HH:mm', '01.11.2009 15:00'), description: 'hell yes', summary: 'Short info2', location: '@home', classification: 'private')
+        }
+      }
+    }
+  }
+}
+````
 
 This plugin uses the [ical4j][ical4j] API and is therefore [iCalendar RFC](https://tools.ietf.org/html/rfc5545) compliant. The output has been tested against the Google Calendar importer, Microsoft Outlook and Mozilla Sunbird.
 
