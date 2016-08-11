@@ -83,6 +83,8 @@ are looking for an overview.
 
 ### Disable the plugin per controller
 
+_(Only valid up to version `0.5.x`)_
+
 If you do not want to have this feature injected into every controller you can specify which controllers to be excluded in Config.groovy
 
     grails.plugins.ical.controllers.exclude = ['excludedTest']
