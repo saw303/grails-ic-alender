@@ -62,7 +62,7 @@ dependencies {
 
     console "org.grails:grails-console"
 
-    compile 'org.mnode.ical4j:ical4j:1.0.7'
+    compile 'org.mnode.ical4j:ical4j:2.0.0'
 }
 
 task wrapper(type: Wrapper) {
