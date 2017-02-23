@@ -2,13 +2,17 @@ package ch.silviowangler.grails.icalender
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistry
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Attendee
+import net.fortuna.ical4j.model.property.Method
+import net.fortuna.ical4j.model.property.Sequence
+import net.fortuna.ical4j.model.property.Status
+import net.fortuna.ical4j.model.property.Uid
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
 import static net.fortuna.ical4j.model.Component.VEVENT
@@ -21,7 +25,7 @@ import static net.fortuna.ical4j.model.parameter.Rsvp.FALSE
 import static net.fortuna.ical4j.model.parameter.Rsvp.TRUE
 import static net.fortuna.ical4j.model.property.Method.CANCEL
 import static net.fortuna.ical4j.model.property.Method.PUBLISH
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals
 /*
 * Copyright 2007-2014 the original author or authors.
 *
@@ -44,17 +48,12 @@ import static org.junit.Assert.assertEquals;
 @TestMixin(GrailsUnitTestMixin)
 class BuilderTests {
 
-    private ICalendarBuilder builder
+    private ICalendarBuilder builder = new ICalendarBuilder()
     private TimeZoneRegistry registry = TimeZoneRegistryFactory.instance.createRegistry()
-
-    @Before
-    void setUp() {
-        this.builder = new ICalendarBuilder()
-    }
 
     @After
     void tearDown() {
-        this.builder = null
+        println builder.cal.toString()
     }
 
     @Test
@@ -285,7 +284,7 @@ class BuilderTests {
     void testSupportAttendee() {
         builder.calendar {
             events {
-                event(start: new Date(), end: (new Date()).next(), summary: 'Text') {
+                event(start: new Date(), end: ++(new Date()), summary: 'Text') {
                     organizer(name: 'Silvio', email: 'abc@ch.ch')
                     reminder(minutesBefore: 5, description: 'Alarm 123')
                     attendees {
@@ -368,7 +367,23 @@ class BuilderTests {
         assert builder.cal.properties.getProperty('X-PRIMARY-CALENDAR').value == 'TRUE'
 
         assert builder.cal.getComponents(VEVENT).size() == 2
+    }
 
-        println builder.cal.toString()
+    // issue #19: https://github.com/saw303/grails-ic-alender/issues/19
+    @Test
+    void supportStatusMethodAndSequence() {
+        builder.calendar(method: 'REQUEST') {
+            events {
+                event start: new Date(), end: new Date(), description: 'Hi all', summary: 'Short info1', sequence: 12, status: 'CANCELLED', uid: '666', method: 'CANCEL'
+            }
+        }
+
+        assert builder.cal.getProperty(Property.METHOD) == new Method('REQUEST')
+        VEvent event = builder.cal.getComponents(VEVENT)[0]
+
+        assert event.status == Status.VEVENT_CANCELLED
+        assert event.sequence == new Sequence(12)
+        assert event.uid == new Uid('666')
+        assert event.getProperty(Property.METHOD) == Method.CANCEL
     }
 }
