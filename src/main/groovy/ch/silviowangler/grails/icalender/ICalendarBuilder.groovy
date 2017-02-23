@@ -15,7 +15,6 @@ import static net.fortuna.ical4j.model.property.CalScale.GREGORIAN
 import static net.fortuna.ical4j.model.property.Method.PUBLISH
 import static net.fortuna.ical4j.model.property.Version.VERSION_2_0
 import static net.fortuna.ical4j.util.Dates.PRECISION_DAY
-
 /*
  * Copyright 2007 the original author or authors.
  *
@@ -40,7 +39,7 @@ import static net.fortuna.ical4j.util.Dates.PRECISION_DAY
  * @author Silvio Wangler
  * @since 0.1
  */
-public class ICalendarBuilder extends BuilderSupport {
+class ICalendarBuilder extends BuilderSupport {
 
     private static final String CLOSURE_NAME_EVENT = 'event'
     private static final String CLOSURE_NAME_ALL_DAY_EVENT = 'allDayEvent'
@@ -70,8 +69,8 @@ public class ICalendarBuilder extends BuilderSupport {
      * Default constructor
      * @since 0.1
      */
-    public ICalendarBuilder() {
-        super();
+    ICalendarBuilder() {
+        super()
         reset()
         uidGenerator = new UidGenerator('iCalPlugin-Grails')
     }
@@ -85,7 +84,7 @@ public class ICalendarBuilder extends BuilderSupport {
      * </pre>
      * @since 0.2
      */
-    public void translate(Closure c) {
+    void translate(Closure c) {
         log.debug("Translating ${c.toString()}")
         c.call()
     }
@@ -165,12 +164,48 @@ public class ICalendarBuilder extends BuilderSupport {
         return nodeName
     }
 
+    protected Object createNode(Object nodeName, Map params, Object o1) {
+        throw new RuntimeException('Unsupported mode')
+    }
+
+    /**
+     * Returns the calendar as iCalendar format
+     * @since 0.1
+     */
+    @Override
+    String toString() {
+        this.cal?.toString()
+    }
+
+    /**
+     * Clears the internal iCalendar buffer
+     * @since 0.2
+     */
+    void reset() {
+        this.cal = null
+        this.currentEvent = null
+    }
+
+    /**
+     * Returns the iCal4J calendar instance
+     * @since 0.2
+     */
+    Calendar getCal() {
+        this.cal
+    }
+
     private void handleCalendarNode(Map params) {
         this.cal = new Calendar()
         this.cal.properties << new ProdId(params.prodid ?: '-//Grails iCalendar plugin//NONSGML Grails iCalendar plugin//EN')
         this.cal.properties << VERSION_2_0
         this.cal.properties << GREGORIAN
-        this.cal.properties << PUBLISH
+
+        if (params.method){
+            this.cal.properties << new Method(params.method)
+        }
+        else {
+            this.cal.properties << PUBLISH
+        }
 
         if (params.xproperties && params.xproperties instanceof Map && !params.xproperties.isEmpty()) {
             for (String key in params.xproperties.keySet()) {
@@ -215,7 +250,7 @@ public class ICalendarBuilder extends BuilderSupport {
             if (params.date instanceof java.util.Date) {
                 date = new Date(params.date.time, PRECISION_DAY, timezone)
             } else if (params.date instanceof String) {
-                def final javaDate = java.util.Date.parse('dd.MM.yyyy', params.date)
+                final javaDate = java.util.Date.parse('dd.MM.yyyy', params.date)
                 date = new Date(javaDate.time, PRECISION_DAY, timezone)
             } else {
                 throw new UnsupportedOperationException("Unknown param type ${params.date?.class?.name} for attribute date")
@@ -224,10 +259,19 @@ public class ICalendarBuilder extends BuilderSupport {
         } else {
             throw new UnsupportedOperationException("Unknown node name ${nodeName}")
         }
+
         if (params?.uid?.length() > 0) {
             currentEvent.properties << new Uid(params.uid)
         } else {
             currentEvent.properties << uidGenerator.generateUid()
+        }
+
+        if (params?.status) {
+            currentEvent.properties << new Status(params.status)
+        }
+
+        if (params?.sequence) {
+            currentEvent.properties << new Sequence(params.sequence)
         }
 
         if (!isUtc) {
@@ -249,40 +293,10 @@ public class ICalendarBuilder extends BuilderSupport {
         this.cal.components << currentEvent
     }
 
-    protected Object createNode(Object nodeName, Map params, Object o1) {
-        throw new RuntimeException('Unsupported mode')
-    }
-
-    /**
-     * Returns the calendar as iCalendar format
-     * @since 0.1
-     */
-    @Override
-    public String toString() {
-        this.cal?.toString()
-    }
-
-    /**
-     * Clears the internal iCalendar buffer
-     * @since 0.2
-     */
-    public void reset() {
-        this.cal = null
-        this.currentEvent = null
-    }
-
     private Clazz getClazz(String value) {
         if (value.toLowerCase() == 'public') return Clazz.PUBLIC
         if (value.toLowerCase() == 'private') return Clazz.PRIVATE
         if (value.toLowerCase() == 'confidential') return Clazz.CONFIDENTIAL
         return new Clazz(value)
-    }
-
-    /**
-     * Returns the iCal4J calendar instance
-     * @since 0.2
-     */
-    public Calendar getCal() {
-        this.cal
     }
 }
