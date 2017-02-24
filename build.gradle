@@ -16,7 +16,7 @@ plugins {
     id "com.jfrog.bintray" version "1.6"
 }
 
-version "0.6.1"
+version "0.6.2"
 group "org.grails.plugins"
 
 apply plugin: 'maven-publish'
@@ -62,7 +62,7 @@ dependencies {
 
     console "org.grails:grails-console"
 
-    compile 'org.mnode.ical4j:ical4j:2.0.0'
+    compile 'org.mnode.ical4j:ical4j:1.0.7'
 }
 
 task wrapper(type: Wrapper) {
