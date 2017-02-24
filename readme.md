@@ -10,12 +10,14 @@ Use version 0.4.4 in Grails 2.x projects by adding it as a plugin dependency in 
         compile ":ic-alendar:0.4.5"
     }
     
+Please not that the Grails 2.x plugin is **end of life since 2017** and won't get any maintainance at all. To get support either upgrade to Grails 3.x or provide a pull request for the Grails 2.x plugin on branch `grails2`.
+    
 ### Grails 3.x
 Use version 0.5.0 or above for Grails 3.x projects by adding it as a dependency in `build.gradle`.
 
     dependencies {
         ...
-        compile "org.grails.plugins:iCalendar:0.6.0"
+        compile "org.grails.plugins:iCalendar:0.6.1"
     }
 
 ## Introduction
