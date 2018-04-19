@@ -65,6 +65,12 @@ grails:
                 scriptlets: html
                 taglib: none
                 staticparts: none
+    doc:
+        title: 'Grails iCalendar Plug-in'
+        subtitle: 'The Grails way of exporting appointments to your users.'
+        authors: 'Silvio Wangler'
+        license: 'Apache 2'
+        copyright: 'Copyright 2009 - 2018 Silvio Wangler'
 ---
 hibernate:
     cache:
