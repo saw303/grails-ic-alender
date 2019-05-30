@@ -81,3 +81,8 @@ bintray {
         }
     }
 }
+
+jar {
+    exclude '/UrlMappings*'
+    exclude '/TestController*'
+}
